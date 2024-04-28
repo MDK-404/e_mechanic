@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "392462720707",
+    "project_id": "e-mechanic-84a02",
+    "storage_bucket": "e-mechanic-84a02.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:392462720707:android:98fee21097e1e19ac30c76",
+        "android_client_info": {
+          "package_name": "com.example.e_mechanic"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfp1wqbhn0s7FzY2yrvQqBiNojo96tfVQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
