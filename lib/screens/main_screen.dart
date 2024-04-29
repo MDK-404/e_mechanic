@@ -4,10 +4,10 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.black87,
         // AppBar mein decoration set karna
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -20,7 +20,7 @@ class MainScreen extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black
+                color: Colors.black87
                     .withOpacity(0.5), // Shadow ka color aur opacity
                 spreadRadius: 4, // Shadow ka spread radius
                 blurRadius: 8, // Shadow ka blur radius
@@ -84,13 +84,13 @@ class MainScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/images/mechanic.png',
+                    'assets/images/customer_login.jpeg',
                     width: 250,
                     height: 100,
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/customerLogin');
+                      Navigator.pushNamed(context, 'customerLogin');
                     },
                     child: Text(
                       'Customer Login',
