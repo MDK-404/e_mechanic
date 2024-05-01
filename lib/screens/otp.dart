@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
 class MyVerify extends StatefulWidget {
-  const MyVerify({Key? key}) : super(key: key);
+  final String verificationid;
+  const MyVerify({Key? key, required this.verificationid}) : super(key: key);
 
   @override
   State<MyVerify> createState() => _MyVerifyState();
@@ -77,13 +78,6 @@ class _MyVerifyState extends State<MyVerify> {
               const SizedBox(
                 height: 10,
               ),
-              // Text(
-              //   "We need to register your phone without getting started!",
-              //   style: TextStyle(
-              //     fontSize: 16,
-              //   ),
-              //   textAlign: TextAlign.center,
-              // ),
               const SizedBox(
                 height: 30,
               ),

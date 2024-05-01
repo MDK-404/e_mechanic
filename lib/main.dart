@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         'splash': (context) => const SplashScreen(),
         'mainscreen': (context) => MainScreen(),
         'customerLogin': (context) => CustomerLogin(),
-        'otp': (context) => MyVerify(),
+        //'otp': (context) => MyVerify(verificationid: 'verificationid',),
         'customer_home': (context) => HomeScreen(),
       },
     );

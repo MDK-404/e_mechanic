@@ -1,27 +1,27 @@
-import 'package:e_mechanic/screens/otp.dart';
-import 'package:e_mechanic/screens/verify.dart';
 import 'package:e_mechanic/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pinput/pinput.dart';
 
-class CustomerLogin extends StatefulWidget {
-  const CustomerLogin({super.key});
+class Verify extends StatefulWidget {
+  final String verificationid;
+  const Verify({Key? key, required this.verificationid}) : super(key: key);
 
   @override
-  State<CustomerLogin> createState() => _CustomerLoginState();
+  State<Verify> createState() => _VerifyState();
 }
 
-class _CustomerLoginState extends State<CustomerLogin> {
+class _VerifyState extends State<Verify> {
   bool loading = false;
   // Mobile number input ke liye controller
-  final TextEditingController countryController = TextEditingController();
+  final TextEditingController verifyCodeController = TextEditingController();
   final auth = FirebaseAuth.instance;
   @override
-  void initState() {
-    // TODO: implement initState
-    countryController.text = "+92";
-    super.initState();
-  }
+  // void initState() {
+  //   // TODO: implement initState
+  //   countryController.text = "+92";
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +76,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
                     SizedBox(
                       width: 40,
                       child: TextField(
-                        controller: countryController,
+                        controller: verifyCodeController,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
                           border: InputBorder.none,
@@ -107,48 +107,19 @@ class _CustomerLoginState extends State<CustomerLogin> {
               SizedBox(
                 height: 20,
               ),
-              SizedBox(
-                width: double.infinity,
-                height: 45,
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        //primary: Colors.green.shade600,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10))),
-                    onPressed: () {
-                      setState(() {
-                        loading = true;
-                      });
-
-                      auth.verifyPhoneNumber(
-                          phoneNumber: countryController.text,
-                          verificationCompleted: (_) {},
-                          verificationFailed: (e) {
-                            setState(() {
-                              loading = false;
-                            });
-                            Utils().toastMessage(e.toString());
-                          },
-                          codeSent: (String verificationid, int? token) {
-                            // Navigator.pushNamed(context, 'otp');
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Verify(
-                                        verificationid: verificationid)));
-                            setState(() {
-                              loading = false;
-                            });
-                          },
-                          codeAutoRetrievalTimeout: (e) {
-                            Utils().toastMessage(e.toString());
-                            setState(() {
-                              loading = false;
-                            });
-                          });
-                      //Navigator.pushNamed(context, 'otp');
-                    },
-                    child: Text("Send the code")),
+              ElevatedButton(
+                onPressed: () async {
+                  final credential = PhoneAuthProvider.credential(
+                      verificationId: widget.verificationid,
+                      smsCode: verifyCodeController.text.toString());
+                  try {
+                    await auth.signInWithCredential(credential);
+                    Navigator.pushNamed(context, 'customer_home');
+                  } catch (e) {
+                    Utils().toastMessage(e.toString());
+                  }
+                },
+                child: Text("Verify Code"),
               )
             ],
           ),
