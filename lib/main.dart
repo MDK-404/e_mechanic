@@ -3,11 +3,14 @@ import 'package:e_mechanic/screens/customer_login.dart';
 import 'package:e_mechanic/screens/main_screen.dart';
 import 'package:e_mechanic/screens/otp.dart';
 import 'package:e_mechanic/screens/splash_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

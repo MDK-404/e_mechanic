@@ -2,6 +2,7 @@ import 'package:e_mechanic/screens/otp.dart';
 import 'package:e_mechanic/screens/verify.dart';
 import 'package:e_mechanic/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class CustomerLogin extends StatefulWidget {
@@ -14,14 +15,15 @@ class CustomerLogin extends StatefulWidget {
 class _CustomerLoginState extends State<CustomerLogin> {
   bool loading = false;
   // Mobile number input ke liye controller
-  final TextEditingController countryController = TextEditingController();
+
+  final TextEditingController phoneController = TextEditingController();
   final auth = FirebaseAuth.instance;
   @override
-  void initState() {
-    // TODO: implement initState
-    countryController.text = "+92";
-    super.initState();
-  }
+  // void initState() {
+  //   // TODO: implement initState
+  //   countryController.text = "+92";
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +78,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
                     SizedBox(
                       width: 40,
                       child: TextField(
-                        controller: countryController,
+                        controller: phoneController,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
                           border: InputBorder.none,
@@ -121,7 +123,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
                       });
 
                       auth.verifyPhoneNumber(
-                          phoneNumber: countryController.text,
+                          phoneNumber: phoneController.text,
                           verificationCompleted: (_) {},
                           verificationFailed: (e) {
                             setState(() {
