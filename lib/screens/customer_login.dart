@@ -16,14 +16,15 @@ class _CustomerLoginState extends State<CustomerLogin> {
   bool loading = false;
   // Mobile number input ke liye controller
 
-  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController  countryController = TextEditingController();
+  var phone="";
   final auth = FirebaseAuth.instance;
   @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   countryController.text = "+92";
-  //   super.initState();
-  // }
+  void initState() {
+    // TODO: implement initState
+    countryController.text = "+92";
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +79,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
                     SizedBox(
                       width: 40,
                       child: TextField(
-                        controller: phoneController,
+                        controller:  countryController,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
                           border: InputBorder.none,
@@ -94,7 +95,11 @@ class _CustomerLoginState extends State<CustomerLogin> {
                       width: 10,
                     ),
                     Expanded(
+                      
                         child: TextField(
+                          onChanged: (value){
+                            phone=value;
+                          },
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         border: InputBorder.none,
@@ -102,7 +107,8 @@ class _CustomerLoginState extends State<CustomerLogin> {
                         hintStyle: TextStyle(color: Colors.white),
                       ),
                       style: TextStyle(color: Colors.white),
-                    ))
+                    )
+                    )
                   ],
                 ),
               ),
@@ -117,13 +123,11 @@ class _CustomerLoginState extends State<CustomerLogin> {
                         //primary: Colors.green.shade600,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10))),
-                    onPressed: () {
-                      setState(() {
-                        loading = true;
-                      });
+                    onPressed: () async{
+                      
 
-                      auth.verifyPhoneNumber(
-                          phoneNumber: phoneController.text,
+                      await auth.verifyPhoneNumber(
+                          phoneNumber: '${countryController.text + phone}',
                           verificationCompleted: (_) {},
                           verificationFailed: (e) {
                             setState(() {
