@@ -90,7 +90,7 @@ class MainScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, 'customerLogin');
+                      Navigator.pushNamed(context, 'customer_home');
                     },
                     child: Text(
                       'Customer Login',
