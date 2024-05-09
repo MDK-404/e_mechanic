@@ -42,6 +42,7 @@ dependencies:
   firebase_storage: ^11.7.2
   pinput: ^4.0.0
   fluttertoast: ^8.2.5
+  google_maps_flutter: ^2.6.1
 
 dev_dependencies:
   flutter_test:

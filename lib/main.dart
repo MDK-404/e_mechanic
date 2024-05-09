@@ -16,36 +16,18 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'E-Mechanic',
+      title: 'Flutter Demo',
       theme: ThemeData(
-        // Light mode theme
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
-        brightness: Brightness.light, // Light mode ki brightness set karna
-        scaffoldBackgroundColor: Colors.white,
-        textTheme: TextTheme(
-          bodyText1: TextStyle(color: Colors.black),
-          bodyText2: TextStyle(color: Colors.black),
-        ),
       ),
-      darkTheme: ThemeData(
-        // Dark mode theme
-        brightness: Brightness.dark, // Dark mode ki brightness set karna
-        scaffoldBackgroundColor: Colors.black,
-        textTheme: TextTheme(
-          bodyText1: TextStyle(color: Colors.white),
-          bodyText2: TextStyle(color: Colors.white),
-        ),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.black,
-        ),
-      ),
-      themeMode: ThemeMode.system, // System ke mode ke hisaab se change karega
       home: const SplashScreen(),
+      // Routes define kiye ja rahe hain
       routes: {
         'splash': (context) => const SplashScreen(),
         'mainscreen': (context) => MainScreen(),

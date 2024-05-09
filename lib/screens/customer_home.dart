@@ -17,32 +17,29 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         if (index == 0) {
             // Home selected
         } else if (index == 1) {
-            // Settings selected
+            // Services selected
         } else if (index == 2) {
+            // Settings selected
+        } else if (index == 3) {
             // Profile selected
         }
-    }
-
-    void _navigateToScreen(String screenName) {
-        // Navigate to new screen
-        print('Navigate to $screenName');
-        // Navigator.pushNamed(context, screenName);
     }
 
     @override
     Widget build(BuildContext context) {
         return Scaffold(
-            appBar: AppBar(
-                title: Text('Customer Home Screen'),
-                centerTitle: true,
-            ),
             bottomNavigationBar: BottomNavigationBar(
+              backgroundColor: Colors.black,
                 currentIndex: _selectedIndex,
                 onTap: _onItemTapped,
                 items: const [
                     BottomNavigationBarItem(
                         icon: Icon(Icons.home),
                         label: 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.build),
+                        label: 'Services',
                     ),
                     BottomNavigationBarItem(
                         icon: Icon(Icons.settings),
@@ -54,125 +51,49 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                     ),
                 ],
             ),
-            body: Column(
+            body: Stack(
                 children: [
-                    // First row with one container: "Emergency Vehicle Assistance"
-                    Expanded(
-                        child: Container(
-                            width: double.infinity,
-                            margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
-                            decoration: BoxDecoration(
-                                color: Colors.black,
-                                border: Border.all(color: Colors.grey, width: 2.0),
-                            ),
-                            child: GestureDetector(
-                                onTap: () {
-                                    _navigateToScreen('/emergencyVehicleAssistance');
-                                },
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                        // Image
-                                        Image.asset(
-                                            'assets/images/map.jpg',
-                                            width: 120, // Increase the width
-                                            height: 120, // Increase the height
-                                        ),
-                                        SizedBox(height: 8.0),
-                                        Text(
-                                            'Emergency Vehicle Assistance',
-                                            style: TextStyle(
-                                                fontSize: 18.0,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                            ),
-                                        ),
-                                    ],
-                                ),
+                    // Placeholder image covering the full screen
+                    Container(
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage('assets/images/map.jpg'),
+                                fit: BoxFit.cover,
                             ),
                         ),
                     ),
-                    // Second row with two containers: "AutoShop" and "Book Appointment"
-                    Expanded(
+                    // Top text with "Hello (username), Find mechanic now"
+                    Positioned(
+                        top: 70.0, // Adjust the distance from the top as needed
+                        left: 20.0,
                         child: Row(
                             children: [
-                                // Container 1: "AutoShop"
-                                Expanded(
-                                    child: AspectRatio(
-                                        aspectRatio: 1.0, // This ensures a square container
-                                        child: Container(
-                                            margin: EdgeInsets.only(right: 4.0, left: 12.0),
-                                            decoration: BoxDecoration(
-                                                color: Colors.black,
-                                                border: Border.all(color: Colors.grey, width: 2.0),
-                                            ),
-                                            child: GestureDetector(
-                                                onTap: () {
-                                                    _navigateToScreen('/autoShop');
-                                                },
-                                                child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: [
-                                                        // Image
-                                                        Image.asset(
-                                                            'assets/images/autoparts.png',
-                                                            width: 100, // Adjust the width as desired
-                                                            height: 100, // Adjust the height as desired
-                                                        ),
-                                                        SizedBox(height: 8.0),
-                                                        Text(
-                                                            'AutoShop',
-                                                            style: TextStyle(
-                                                                fontSize: 18.0,
-                                                                fontWeight: FontWeight.bold,
-                                                                color: Colors.white,
-                                                            ),
-                                                        ),
-                                                    ],
-                                                ),
-                                            ),
-                                        ),
-                                    ),
+                                Icon(
+                                    Icons.car_rental,
+                                    color: Colors.black,
+                                    size: 24.0,
                                 ),
-                                // Container 2: "Book Appointment"
-                                Expanded(
-                                    child: AspectRatio(
-                                        aspectRatio: 1.0, // This ensures a square container
-                                        child: Container(
-                                            margin: EdgeInsets.only(left: 4.0, right: 12.0),
-                                            decoration: BoxDecoration(
-                                                color: Colors.black,
-                                                border: Border.all(color: Colors.grey, width: 2.0),
-                                            ),
-                                            child: GestureDetector(
-                                                onTap: () {
-                                                    _navigateToScreen('/bookAppointment');
-                                                },
-                                                child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: [
-                                                        // Image
-                                                        Image.asset(
-                                                            'assets/images/mechanic.png',
-                                                            width: 100, // Adjust the width as desired
-                                                            height: 100, // Adjust the height as desired
-                                                        ),
-                                                        SizedBox(height: 8.0),
-                                                        Text(
-                                                            'Book Appointment',
-                                                            style: TextStyle(
-                                                                fontSize: 18.0,
-                                                                fontWeight: FontWeight.bold,
-                                                                color: Colors.white,
-                                                            ),
-                                                        ),
-                                                    ],
-                                                ),
-                                            ),
-                                        ),
+                                SizedBox(width: 8.0),
+                                Text(
+                                    'Hello (username), Find mechanic now',
+                                    style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
                                     ),
                                 ),
                             ],
+                        ),
+                    ),
+                    // Bottom right corner "Request Service" button
+                    Positioned(
+                        bottom: 20.0,
+                        right: 20.0,
+                        child: ElevatedButton(
+                            onPressed: () {
+                                print('Request Service');
+                            },
+                            child: Text('Request Service'),
                         ),
                     ),
                 ],

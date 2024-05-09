@@ -4,10 +4,10 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.white,
         // AppBar mein decoration set karna
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -20,7 +20,7 @@ class MainScreen extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black87
+                color: Colors.white
                     .withOpacity(0.5), // Shadow ka color aur opacity
                 spreadRadius: 4, // Shadow ka spread radius
                 blurRadius: 8, // Shadow ka blur radius
@@ -49,7 +49,7 @@ class MainScreen extends StatelessWidget {
                       fontSize: 20,
                       fontFamily: 'Poppins',
                       color:
-                          Colors.white, // Baaki text ko white color set karna
+                          Colors.black, // Baaki text ko white color set karna
                     ),
                   ),
                 ],
