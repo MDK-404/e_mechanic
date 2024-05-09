@@ -44,11 +44,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                     ),
                     // Text aur circular image ko show karne ke liye Positioned widget
                     Positioned(
-                        top: 30.0, // App bar se distance adjust karne ke liye
+                        top: 0.0, // App bar se distance adjust karne ke liye
                         left: 0, // Screen ki left side se shuru karne ke liye
                         right: 0, // Screen ki right side tak extend karne ke liye
                         child: Card(
-                            elevation: 4.0,
+                            elevation: 6.0,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0),
                             ),
