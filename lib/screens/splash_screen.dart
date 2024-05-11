@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
- 
+
 import 'main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.black87,
+        color: Colors.white,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -62,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 "Let's get started",
                 style: TextStyle(
                   fontSize: 20,
-                  color: Colors.black,
+                  color: Colors.white,
                   decoration: TextDecoration.underline,
                 ),
               ),
