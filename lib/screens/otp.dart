@@ -137,9 +137,8 @@ class _MyVerifyState extends State<MyVerify> {
                       String userType = "";
                       var data = snapshot.data();
                       if (data is Map<String, dynamic>) {
-                        userType = data['userType'];
+                        userType = data['userType'] ?? ""; // Handle null case
                       }
-                      //String? userType = snapshot.data()?['userType'] as String?;
 
                       if (userType == 'mechanic') {
                         Navigator.pushReplacement(

@@ -43,6 +43,9 @@ dependencies:
   pinput: ^4.0.0
   fluttertoast: ^8.2.5
   google_maps_flutter: ^2.6.1
+  provider: ^6.1.2
+  shared_preferences: ^2.2.3
+   
 
 dev_dependencies:
   flutter_test:
