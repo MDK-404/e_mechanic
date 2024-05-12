@@ -1,12 +1,13 @@
 import 'package:e_mechanic/screens/otp.dart';
-import 'package:e_mechanic/screens/verify.dart';
 import 'package:e_mechanic/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class CustomerLogin extends StatefulWidget {
-  const CustomerLogin({super.key});
+  const CustomerLogin({Key? key}) : super(key: key);
+
+  static String verify = "";
 
   @override
   State<CustomerLogin> createState() => _CustomerLoginState();
@@ -16,8 +17,8 @@ class _CustomerLoginState extends State<CustomerLogin> {
   bool loading = false;
   // Mobile number input ke liye controller
 
-  final TextEditingController  countryController = TextEditingController();
-  var phone="";
+  final TextEditingController countryController = TextEditingController();
+  var phone = "";
   final auth = FirebaseAuth.instance;
   @override
   void initState() {
@@ -79,7 +80,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
                     SizedBox(
                       width: 40,
                       child: TextField(
-                        controller:  countryController,
+                        controller: countryController,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
                           border: InputBorder.none,
@@ -95,11 +96,10 @@ class _CustomerLoginState extends State<CustomerLogin> {
                       width: 10,
                     ),
                     Expanded(
-                      
                         child: TextField(
-                          onChanged: (value){
-                            phone=value;
-                          },
+                      onChanged: (value) {
+                        phone = value;
+                      },
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         border: InputBorder.none,
@@ -107,8 +107,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
                         hintStyle: TextStyle(color: Colors.white),
                       ),
                       style: TextStyle(color: Colors.white),
-                    )
-                    )
+                    ))
                   ],
                 ),
               ),
@@ -123,9 +122,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
                         //primary: Colors.green.shade600,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10))),
-                    onPressed: () async{
-                      
-
+                    onPressed: () async {
                       await auth.verifyPhoneNumber(
                           phoneNumber: '${countryController.text + phone}',
                           verificationCompleted: (_) {},
@@ -136,11 +133,11 @@ class _CustomerLoginState extends State<CustomerLogin> {
                             Utils().toastMessage(e.toString());
                           },
                           codeSent: (String verificationid, int? token) {
-                            // Navigator.pushNamed(context, 'otp');
+                            // CustomerLogin.verify = verificationid;
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Verify(
+                                    builder: (context) => MyVerify(
                                         verificationid: verificationid)));
                             setState(() {
                               loading = false;
@@ -152,7 +149,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
                               loading = false;
                             });
                           });
-                      //Navigator.pushNamed(context, 'otp');
+                      Navigator.pushNamed(context, 'otp');
                     },
                     child: Text("Send the code")),
               )

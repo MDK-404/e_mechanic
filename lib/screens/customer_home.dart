@@ -1,6 +1,7 @@
 import 'package:e_mechanic/screens/navbar.dart';
 import 'package:e_mechanic/screens/navigationhandler.dart';
 import 'package:e_mechanic/screens/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
@@ -9,6 +10,7 @@ class CustomerHomeScreen extends StatefulWidget {
 }
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
+  final auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,10 +61,16 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ),
                         Spacer(), // Space fill karne ke liye
                         // Circular image ke liye
-                        CircleAvatar(
-                          radius: 24.0,
-                          backgroundImage: AssetImage(
-                            'assets/images/customer_login.jpeg',
+                        InkWell(
+                          onTap: () {
+                            auth.signOut();
+                            Navigator.pushNamed(context, 'mainscreen');
+                          },
+                          child: CircleAvatar(
+                            radius: 24.0,
+                            backgroundImage: AssetImage(
+                              'assets/images/customer_login.jpeg',
+                            ),
                           ),
                         ),
                       ],

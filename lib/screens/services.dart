@@ -1,4 +1,3 @@
-import 'package:e_mechanic/screens/bookappointment';
 import 'package:e_mechanic/screens/customer_home.dart';
 import 'package:e_mechanic/screens/navbar.dart';
 import 'package:e_mechanic/screens/navigationhandler.dart';
@@ -60,13 +59,13 @@ class ServicesScreen extends StatelessWidget {
               Divider(), // Adding a divider after the row
             ],
           ),
-          Column(
-            children: [
-              buildServiceRow(
-                  context, 'Book Appointments', BookAppointmentScreen()),
-              Divider(), // Adding a divider after the row
-            ],
-          ),
+          //   Column(
+          //   children: [
+          //buildServiceRow(
+          //  context, 'Book Appointments', BookAppointmentScreen()),
+          // Divider(), // Adding a divider after the row
+          //  ],
+          //  ),
           Column(
             children: [
               buildServiceRow(context, 'Fuel', FuelScreen()),

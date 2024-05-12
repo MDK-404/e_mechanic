@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatelessWidget {
+  String userType = ""; // UserType variable declare karo
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +92,8 @@ class MainScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, 'customer_home');
+                      Navigator.pushNamed(context, 'customerLogin');
+                      userType = "customer"; // Customer type select karo
                     },
                     child: Text(
                       'Customer Login',
@@ -131,7 +134,10 @@ class MainScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/mechanicLogin');
+                      Navigator.pushNamed(context, 'customerLogin');
+                      userType = "mechanic";
+
+                      // Mechanic type select karo
                     },
                     child: Text(
                       'Mechanic Login',
