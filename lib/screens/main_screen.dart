@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:e_mechanic/provider/user_type_provider.dart'; // Import UserTypeProvider
-import 'package:e_mechanic/screens/customer_login.dart';
-// import 'package:e_mechanic/screens/mechanic_login.dart';
-import 'package:e_mechanic/utils/shared_preferences.dart';
 
 class MainScreen extends StatelessWidget {
+  String userType = ""; // UserType variable declare karo
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,20 +10,23 @@ class MainScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.white,
+        // AppBar mein decoration set karna
         flexibleSpace: Container(
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: Colors.orange,
+                color: Colors.orange, // Border color set karna
                 width: 2.0,
               ),
+              // Border ki width set karna
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.white.withOpacity(0.5),
-                spreadRadius: 4,
-                blurRadius: 8,
-                offset: Offset(0, 4),
+                color: Colors.white
+                    .withOpacity(0.5), // Shadow ka color aur opacity
+                spreadRadius: 4, // Shadow ka spread radius
+                blurRadius: 8, // Shadow ka blur radius
+                offset: Offset(0, 4), // Shadow ki position set karna
               ),
             ],
           ),
@@ -42,7 +42,7 @@ class MainScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontFamily: 'Poppins',
-                      color: Colors.orange,
+                      color: Colors.orange, // E ko orange color set karna
                     ),
                   ),
                   TextSpan(
@@ -50,7 +50,8 @@ class MainScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontFamily: 'Poppins',
-                      color: Colors.black,
+                      color:
+                          Colors.black, // Baaki text ko white color set karna
                     ),
                   ),
                 ],
@@ -70,6 +71,7 @@ class MainScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(height: 50),
+            // Customer section container
             Container(
               height: 250,
               margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
@@ -90,9 +92,8 @@ class MainScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // Set userType to customer
-                      SharedPreferencesUtils.setUserType('customer');
                       Navigator.pushNamed(context, 'customerLogin');
+                      userType = "customer"; // Customer type select karo
                     },
                     child: Text(
                       'Customer Login',
@@ -112,6 +113,7 @@ class MainScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 50),
+            // Mechanic section container
             Container(
               height: 250,
               margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
@@ -132,9 +134,10 @@ class MainScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // Set userType to mechanic
-                      SharedPreferencesUtils.setUserType('mechanic');
                       Navigator.pushNamed(context, 'customerLogin');
+                      userType = "mechanic";
+
+                      // Mechanic type select karo
                     },
                     child: Text(
                       'Mechanic Login',

@@ -1,7 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_mechanic/screens/customer_home.dart';
 import 'package:e_mechanic/screens/customer_login.dart';
-import 'package:e_mechanic/screens/mechanicprofile.dart';
 import 'package:e_mechanic/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +15,6 @@ class MyVerify extends StatefulWidget {
 class _MyVerifyState extends State<MyVerify> {
   final FirebaseAuth aut = FirebaseAuth.instance;
   final otpcontroller = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
@@ -47,7 +43,7 @@ class _MyVerifyState extends State<MyVerify> {
 
     var code = "";
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -111,78 +107,40 @@ class _MyVerifyState extends State<MyVerify> {
                 width: double.infinity,
                 height: 45,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    // backgroundColor: Colors.green.shade600,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () async {
-                    final credential = PhoneAuthProvider.credential(
-                      verificationId: widget.verificationid,
-                      smsCode: otpcontroller.text,
-                    );
+                    style: ElevatedButton.styleFrom(
 
-                    try {
-                      await aut.signInWithCredential(credential);
+                        // backgroundColor: Colors.green.shade600,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10))),
+                    onPressed: () async {
+                      final credential = PhoneAuthProvider.credential(
+                          verificationId: widget.verificationid,
+                          smsCode: otpcontroller.text);
 
-                      // Firebase se user ke details fetch karo
-                      User? user = FirebaseAuth.instance.currentUser;
-                      DocumentSnapshot snapshot = await FirebaseFirestore
-                          .instance
-                          .collection('users')
-                          .doc(user?.uid)
-                          .get();
-
-                      String userType = "";
-                      var data = snapshot.data();
-                      if (data is Map<String, dynamic>) {
-                        userType = data['userType'] ?? ""; // Handle null case
+                      try {
+                        await aut.signInWithCredential(credential);
+                        Navigator.pushNamed(context, 'customer_home');
+                      } catch (e) {
+                        Utils().toastMessage(e.toString());
                       }
-
-                      if (userType == 'mechanic') {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MechanicProfile(),
-                          ),
-                        );
-                      } else if (userType == 'customer') {
-                        // Customer ki home screen par jaao
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CustomerHomeScreen(),
-                          ),
-                        );
-                      } else {
-                        // Agar user type kuch aur hai, toh appropriate action lo
-                        // Jaise error message dikhao ya koi default screen dikhao
-                        Utils().toastMessage("Invalid user type");
-                      }
-                    } catch (e) {
-                      Utils().toastMessage(e.toString());
-                    }
-                  },
-                  child: const Text(
-                    "Verify Phone Number",
-                    style: TextStyle(color: Colors.orange),
-                  ),
-                ),
+                    },
+                    child: const Text(
+                      "Verify Phone Number",
+                      style: TextStyle(color: Colors.orange),
+                    )),
               ),
               Row(
                 children: [
                   TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, 'customerLogin');
-                    },
-                    child: const Text(
-                      "Edit Phone Number ?",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
+                      onPressed: () {
+                       Navigator.pushNamed(context, 'customerLogin ');
+                      },
+                      child: const Text(
+                        "Edit Phone Number ?",
+                        style: TextStyle(color: Colors.black),
+                      ))
                 ],
-              ),
+              )
             ],
           ),
         ),
