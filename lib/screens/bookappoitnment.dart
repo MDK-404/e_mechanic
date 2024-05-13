@@ -8,10 +8,8 @@ class BookAppointmentScreen extends StatefulWidget {
 }
 
 class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
-  String _selectedServiceType = '';
   DateTime _selectedDate = DateTime.now();
-  String _selectedLocation = '';
-  String _selectedMechanic = '';
+  String _selectedCity = '';
 
   // Function to handle date selection
   Future<void> _selectDate(BuildContext context) async {
@@ -38,23 +36,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            DropdownButtonFormField<String>(
-              value: _selectedServiceType,
-              decoration: InputDecoration(labelText: 'Service Type'),
-              items: <String>['Car Tuning', 'Oil Change', 'Tire Rotation', 'Other']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedServiceType = newValue!;
-                });
-              },
-            ),
-            SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -68,19 +49,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             ),
             SizedBox(height: 20),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Select Location'),
+              decoration: InputDecoration(labelText: 'Enter Your City'),
               onChanged: (value) {
                 setState(() {
-                  _selectedLocation = value;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Choose Mechanic'),
-              onChanged: (value) {
-                setState(() {
-                  _selectedMechanic = value;
+                  _selectedCity = value;
                 });
               },
             ),
