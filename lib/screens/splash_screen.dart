@@ -74,8 +74,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 "Let's get started",
                 style: TextStyle(
                   fontSize: 20,
-                  color: Colors.white,
-                  decoration: TextDecoration.underline,
+                  color: Colors.black,
                 ),
               ),
             ),

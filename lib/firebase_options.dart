@@ -50,20 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAmx7C1-UjkaSd3rcHY9YJnW-IfUlvipv8',
-    appId: '1:392462720707:web:28d087f9b352f2a8c30c76',
-    messagingSenderId: '392462720707',
-    projectId: 'e-mechanic-84a02',
-    authDomain: 'e-mechanic-84a02.firebaseapp.com',
-    storageBucket: 'e-mechanic-84a02.appspot.com',
-    measurementId: 'G-QZRPJJRQ8W',
+    apiKey: 'AIzaSyB9JDL1mJ-IJAD2qAB17x1p-84SWepR814',
+    appId: '1:271366593977:web:9efb305fdc4bc598aaaa68',
+    messagingSenderId: '271366593977',
+    projectId: 'emechanicfyp-8f13f',
+    authDomain: 'emechanicfyp-8f13f.firebaseapp.com',
+    storageBucket: 'emechanicfyp-8f13f.appspot.com',
+    measurementId: 'G-BFY3F3Q5JB',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAfp1wqbhn0s7FzY2yrvQqBiNojo96tfVQ',
-    appId: '1:392462720707:android:98fee21097e1e19ac30c76',
-    messagingSenderId: '392462720707',
-    projectId: 'e-mechanic-84a02',
-    storageBucket: 'e-mechanic-84a02.appspot.com',
+    apiKey: 'AIzaSyCZc0R8pV5HwDe7Gn56d4cYFasLW3asCKk',
+    appId: '1:271366593977:android:771e0d6ed5c34fe2aaaa68',
+    messagingSenderId: '271366593977',
+    projectId: 'emechanicfyp-8f13f',
+    storageBucket: 'emechanicfyp-8f13f.appspot.com',
   );
 }

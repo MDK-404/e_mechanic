@@ -30,7 +30,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: Colors.white,
       body: Container(
         // color: Colors.black87,
         margin: EdgeInsets.only(left: 25, right: 25),
@@ -60,7 +60,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
               ),
               Text(
                 "We need to register your phone before getting started!",
-                style: TextStyle(fontSize: 16, color: Colors.white),
+                style: TextStyle(fontSize: 16, color: Colors.black),
                 textAlign: TextAlign.center,
               ),
               SizedBox(
@@ -85,12 +85,12 @@ class _CustomerLoginState extends State<CustomerLogin> {
                         decoration: InputDecoration(
                           border: InputBorder.none,
                         ),
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                     Text(
                       "|",
-                      style: TextStyle(fontSize: 33, color: Colors.white),
+                      style: TextStyle(fontSize: 33, color: Colors.black),
                     ),
                     SizedBox(
                       width: 10,
@@ -104,9 +104,9 @@ class _CustomerLoginState extends State<CustomerLogin> {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: "Phone",
-                        hintStyle: TextStyle(color: Colors.white),
+                        hintStyle: TextStyle(color: Colors.black),
                       ),
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.black),
                     ))
                   ],
                 ),
