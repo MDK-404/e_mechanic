@@ -1,5 +1,6 @@
 import 'package:e_mechanic/screens/customer_home.dart';
 import 'package:e_mechanic/screens/customer_login.dart';
+import 'package:e_mechanic/screens/customer_profile.dart';
 import 'package:e_mechanic/screens/main_screen.dart';
 import 'package:e_mechanic/screens/otp.dart';
 //import 'package:e_mechanic/screens/otp.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
               verificationid: 'verificationid',
             ),
         'customer_home': (context) => CustomerHomeScreen(),
+        'customer_profile': (context) => CustomerProfile(),
       },
     );
   }

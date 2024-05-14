@@ -122,7 +122,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               MaterialPageRoute(builder: (context) => ServicesScreen()),
             );
           } else if (index == 2) {
-          } else if (index == 3) {}
+          } else if (index == 3) {
+            Navigator.pushReplacementNamed(context, 'customer_profile');
+          }
         },
         currentIndex: 0,
       ),

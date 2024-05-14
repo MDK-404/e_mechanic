@@ -119,7 +119,7 @@ class _MyVerifyState extends State<MyVerify> {
 
                       try {
                         await aut.signInWithCredential(credential);
-                        Navigator.pushNamed(context, 'customer_home');
+                        Navigator.pushNamed(context, 'customer_profile');
                       } catch (e) {
                         Utils().toastMessage(e.toString());
                       }
@@ -133,7 +133,7 @@ class _MyVerifyState extends State<MyVerify> {
                 children: [
                   TextButton(
                       onPressed: () {
-                       Navigator.pushNamed(context, 'customerLogin ');
+                        Navigator.pushNamed(context, 'customerLogin ');
                       },
                       child: const Text(
                         "Edit Phone Number ?",
