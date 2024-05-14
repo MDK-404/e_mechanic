@@ -19,9 +19,17 @@ class _MechanicProfileState extends State<MechanicProfile> {
   final TextEditingController areaController = TextEditingController();
   String phoneNumber = '';
   late String shopType = '';
-  late String servicesAvailable = '';
+  late List<String> servicesAvailable = [];
   late String shopTiming = '';
-  late bool isShopOpen = false;
+  late Map<String, bool> availability = {
+    'Monday': false,
+    'Tuesday': false,
+    'Wednesday': false,
+    'Thursday': false,
+    'Friday': false,
+    'Saturday': false,
+    'Sunday': false,
+  };
   late String profileImageUrl = '';
 
   late File? _image; // Initialize with null
@@ -83,7 +91,7 @@ class _MechanicProfileState extends State<MechanicProfile> {
         'shopType': shopType,
         'servicesAvailable': servicesAvailable,
         'shopTiming': shopTiming,
-        'isShopOpen': isShopOpen,
+        'availability': availability,
       });
 
       // Navigate to mechanic's dashboard or any other screen after saving profile
@@ -194,42 +202,66 @@ class _MechanicProfileState extends State<MechanicProfile> {
               ],
             ),
             SizedBox(height: 20),
-            TextField(
+            DropdownButtonFormField(
               decoration: InputDecoration(
                 labelText: 'Services Available',
                 border: OutlineInputBorder(),
               ),
-              onChanged: (value) {
-                setState(() {
-                  servicesAvailable = value;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Shop Timing',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  shopTiming = value;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            Row(
-              children: [
-                Checkbox(
-                  value: isShopOpen,
-                  onChanged: (value) {
-                    setState(() {
-                      isShopOpen = value!;
-                    });
-                  },
+              value: null,
+              items: [
+                DropdownMenuItem(
+                  child: Text('Tuning'),
+                  value: 'Tuning',
                 ),
-                Text('Shop is open'),
+                DropdownMenuItem(
+                  child: Text('Denting'),
+                  value: 'Denting',
+                ),
+                DropdownMenuItem(
+                  child: Text('Electrician'),
+                  value: 'Electrician',
+                ),
+                DropdownMenuItem(
+                  child: Text('Puncture'),
+                  value: 'Puncture',
+                ),
+                DropdownMenuItem(
+                  child: Text('Car Deck System'),
+                  value: 'Car Deck System',
+                ),
+                DropdownMenuItem(
+                  child: Text('Fuel Delivery'),
+                  value: 'Fuel Delivery',
+                ),
+                DropdownMenuItem(
+                  child: Text('Auto Parts'),
+                  value: 'Auto Parts',
+                ),
               ],
+              onChanged: (value) {
+                setState(() {
+                  servicesAvailable.add(value.toString());
+                });
+              },
+            ),
+            SizedBox(height: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: availability.keys.map((String day) {
+                return Row(
+                  children: [
+                    Checkbox(
+                      value: availability[day],
+                      onChanged: (value) {
+                        setState(() {
+                          availability[day] = value!;
+                        });
+                      },
+                    ),
+                    Text(day),
+                  ],
+                );
+              }).toList(),
             ),
             SizedBox(height: 20),
             ElevatedButton(
@@ -242,10 +274,9 @@ class _MechanicProfileState extends State<MechanicProfile> {
       bottomNavigationBar: MechanicBottomNavigationBar(
         onTap: (index) {
           if (index == 0) {
+            Navigator.pushReplacementNamed(context, 'mechanic_dashboard');
           } else if (index == 1) {
-          } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, 'mechanic_profile');
-          }
+          } else if (index == 2) {}
         },
         currentIndex: 2,
       ),
