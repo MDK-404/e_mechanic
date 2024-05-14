@@ -2,6 +2,11 @@ import 'package:e_mechanic/screens/customer_home.dart';
 import 'package:e_mechanic/screens/customer_login.dart';
 import 'package:e_mechanic/screens/customer_profile.dart';
 import 'package:e_mechanic/screens/main_screen.dart';
+import 'package:e_mechanic/screens/mechanic_dashboard.dart';
+import 'package:e_mechanic/screens/mechanic_login.dart';
+import 'package:e_mechanic/screens/mechanic_otp.dart';
+import 'package:e_mechanic/screens/mechanic_profile.dart';
+
 import 'package:e_mechanic/screens/otp.dart';
 //import 'package:e_mechanic/screens/otp.dart';
 import 'package:e_mechanic/screens/splash_screen.dart';
@@ -34,11 +39,17 @@ class MyApp extends StatelessWidget {
         'splash': (context) => const SplashScreen(),
         'mainscreen': (context) => MainScreen(),
         'customerLogin': (context) => CustomerLogin(),
+        'customer_home': (context) => CustomerHomeScreen(),
+        'customer_profile': (context) => CustomerProfile(),
+        'mechanic_dashboard': (context) => MechanicDashboard(),
+        'mechanic_profile': (context) => MechanicProfile(),
+        'mechanic_login': (context) => MechanciLogin(),
+        'mechanic_otp': (context) => OTPVerification(
+              verificationid: 'verificationid',
+            ),
         'otp': (context) => MyVerify(
               verificationid: 'verificationid',
             ),
-        'customer_home': (context) => CustomerHomeScreen(),
-        'customer_profile': (context) => CustomerProfile(),
       },
     );
   }

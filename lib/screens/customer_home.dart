@@ -128,12 +128,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         },
         currentIndex: 0,
       ),
-      // bottomNavigationBar: MyBottomNavigationBar(
-      //   currentIndex: 0, // Set the current index
-      //   onTap: (index) {
-      //     NavigationHandler.handleNavigation(context, index);
-      //   },
-      // ),
     );
   }
 }
