@@ -17,6 +17,7 @@ class _MechanicProfileState extends State<MechanicProfile> {
   final TextEditingController shopNameController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
   final TextEditingController areaController = TextEditingController();
+  final TextEditingController shopTimingController = TextEditingController();
   String phoneNumber = '';
   late String shopType = '';
   late List<String> servicesAvailable = [];
@@ -42,7 +43,7 @@ class _MechanicProfileState extends State<MechanicProfile> {
     // Fetching user's phone number from Firebase Authentication
     final auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
-    //phoneNumber = user!.phoneNumber!;
+    phoneNumber = user!.phoneNumber!;
   }
 
   Future getImage() async {
@@ -90,7 +91,7 @@ class _MechanicProfileState extends State<MechanicProfile> {
         'area': areaController.text,
         'shopType': shopType,
         'servicesAvailable': servicesAvailable,
-        'shopTiming': shopTiming,
+        'shopTiming': shopTimingController.text,
         'availability': availability,
       });
 
@@ -128,19 +129,21 @@ class _MechanicProfileState extends State<MechanicProfile> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: getImage,
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: _image != null
-                    ? FileImage(_image!)
-                    : NetworkImage(profileImageUrl) as ImageProvider,
-                child: _image == null
-                    ? Icon(
-                        Icons.camera_alt,
-                        size: 40,
-                      )
-                    : null,
+            Center(
+              child: GestureDetector(
+                onTap: getImage,
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: _image != null
+                      ? FileImage(_image!)
+                      : NetworkImage(profileImageUrl) as ImageProvider,
+                  child: _image == null
+                      ? Icon(
+                          Icons.camera_alt,
+                          size: 40,
+                        )
+                      : null,
+                ),
               ),
             ),
             SizedBox(height: 20),
@@ -177,6 +180,14 @@ class _MechanicProfileState extends State<MechanicProfile> {
               ),
             ),
             SizedBox(height: 20),
+            TextField(
+              controller: shopTimingController,
+              decoration: InputDecoration(
+                labelText: 'Shop Timing',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 20),
             Row(
               children: [
                 Radio(
@@ -202,7 +213,7 @@ class _MechanicProfileState extends State<MechanicProfile> {
               ],
             ),
             SizedBox(height: 20),
-            DropdownButtonFormField(
+            DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 labelText: 'Services Available',
                 border: OutlineInputBorder(),
@@ -240,9 +251,41 @@ class _MechanicProfileState extends State<MechanicProfile> {
               ],
               onChanged: (value) {
                 setState(() {
-                  servicesAvailable.add(value.toString());
+                  if (!servicesAvailable.contains(value)) {
+                    servicesAvailable.add(value!);
+                  }
                 });
               },
+            ),
+            SizedBox(height: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Selected Services:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 5),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: servicesAvailable.length,
+                  itemBuilder: (context, index) {
+                    return Row(
+                      children: [
+                        Text(servicesAvailable[index]),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              servicesAvailable.removeAt(index);
+                            });
+                          },
+                          icon: Icon(Icons.clear),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
             ),
             SizedBox(height: 20),
             Column(
@@ -276,9 +319,14 @@ class _MechanicProfileState extends State<MechanicProfile> {
           if (index == 0) {
             Navigator.pushReplacementNamed(context, 'mechanic_dashboard');
           } else if (index == 1) {
-          } else if (index == 2) {}
+            Navigator.pushReplacementNamed(context, 'mechanic_dashboard');
+          } else if (index == 2) {
+            Navigator.pushReplacementNamed(context, 'addproducts');
+          } else if (index == 3) {
+            Navigator.pushReplacementNamed(context, 'mechanic_profile');
+          }
         },
-        currentIndex: 2,
+        currentIndex: 3,
       ),
     );
   }

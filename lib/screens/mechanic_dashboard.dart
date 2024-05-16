@@ -21,6 +21,9 @@ class _MechanicDashboardState extends State<MechanicDashboard> {
           if (index == 0) {
           } else if (index == 1) {
           } else if (index == 2) {
+            Navigator.pushNamed(context, 'addproducts');
+          }
+          else if(index==3){
             Navigator.pushNamed(context, 'mechanic_profile');
           }
         },
