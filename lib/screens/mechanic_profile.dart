@@ -42,7 +42,7 @@ class _MechanicProfileState extends State<MechanicProfile> {
     // Fetching user's phone number from Firebase Authentication
     final auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
-    phoneNumber = user!.phoneNumber!;
+    //phoneNumber = user!.phoneNumber!;
   }
 
   Future getImage() async {

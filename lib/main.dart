@@ -1,3 +1,4 @@
+import 'package:e_mechanic/screens/add_products.dart';
 import 'package:e_mechanic/screens/customer_home.dart';
 import 'package:e_mechanic/screens/customer_login.dart';
 import 'package:e_mechanic/screens/customer_profile.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         'mechanic_dashboard': (context) => MechanicDashboard(),
         'mechanic_profile': (context) => MechanicProfile(),
         'mechanic_login': (context) => MechanciLogin(),
+        'addproducts': (context) => AddProductScreen(),
         'mechanic_otp': (context) => OTPVerification(
               verificationid: 'verificationid',
             ),
