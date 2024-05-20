@@ -134,7 +134,7 @@ class MainScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context,'mechanic_dashboard');
+                      Navigator.pushNamed(context, 'mechanic_login');
                       userType = "mechanic";
 
                       // Mechanic type select karo

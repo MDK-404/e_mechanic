@@ -14,87 +14,104 @@ class AddProductScreen extends StatefulWidget {
 }
 
 class _AddProductScreenState extends State<AddProductScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController productNameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController stockController = TextEditingController();
 
-  late List<File> _images = [];
+  File? _image;
   final picker = ImagePicker();
 
   String shopName = '';
-  //late User? _user;
+  User? _user;
 
   @override
-  // void initState() {
-  //   super.initState();
-  //   fetchShopName();
-  //   _user = FirebaseAuth.instance.currentUser;
-  // }
+  void initState() {
+    super.initState();
+    _user = FirebaseAuth.instance.currentUser;
+    if (_user != null) {
+      fetchShopName();
+    } else {
+      print('User is not logged in.');
+    }
+  }
 
-  // Future<void> fetchShopName() async {
-  //   final mechanicPhoneNumber = _user!.phoneNumber!;
+  Future<void> fetchShopName() async {
+    if (_user == null) {
+      print('User is not logged in.');
+      return;
+    }
 
-  //   DocumentSnapshot mechanicSnapshot = await FirebaseFirestore.instance
-  //       .collection('mechanics')
-  //       .doc(mechanicPhoneNumber)
-  //       .get();
+    final mechanicPhoneNumber = _user!.phoneNumber!;
 
-  //   setState(() {
-  //     shopName = mechanicSnapshot.get('shopName') ?? '';
-  //   });
-  // }
+    DocumentSnapshot mechanicSnapshot = await FirebaseFirestore.instance
+        .collection('mechanics')
+        .doc(mechanicPhoneNumber)
+        .get();
 
-  Future<List<String>> uploadImages() async {
+    setState(() {
+      shopName = mechanicSnapshot.get('shopName') ?? '';
+    });
+  }
+
+  Future<String> uploadImage(File image) async {
     try {
-      final List<String> imageUrls = [];
-      for (final image in _images) {
-        final Reference storageReference = FirebaseStorage.instance
-            .ref()
-            .child('product_images/${DateTime.now().millisecondsSinceEpoch}');
+      final Reference storageReference = FirebaseStorage.instance
+          .ref()
+          .child('product_images/${DateTime.now().millisecondsSinceEpoch}');
 
-        final UploadTask uploadTask = storageReference.putFile(image);
-        await uploadTask.whenComplete(() async {
-          final url = await storageReference.getDownloadURL();
-          imageUrls.add(url);
-        });
-      }
-      return imageUrls;
+      final UploadTask uploadTask = storageReference.putFile(image);
+      await uploadTask.whenComplete(() async {});
+      final url = await storageReference.getDownloadURL();
+      return url;
     } catch (error) {
-      print('Error uploading images: $error');
+      print('Error uploading image: $error');
       rethrow;
     }
   }
 
   Future<void> saveProduct() async {
+    if (_user == null) {
+      print('User is not logged in.');
+      return;
+    }
+
+    if (!_formKey.currentState!.validate()) {
+      return; // Form is not valid, do not proceed
+    }
+
     final productName = productNameController.text;
     final description = descriptionController.text;
     final stockAvailable = int.tryParse(stockController.text) ?? 0;
 
     try {
-      final List<String> imageUrls = await uploadImages();
+      final String imageUrl = _image != null ? await uploadImage(_image!) : '';
 
       final productData = {
         'productName': productName,
         'description': description,
         'stockAvailable': stockAvailable,
-        'images': imageUrls,
+        'image': imageUrl,
       };
 
-      // await FirebaseFirestore.instance
-      //     .collection('products')
-      //     .doc(_user!.uid)
-      //     .collection('products')
-      //     .add(productData);
+      await FirebaseFirestore.instance
+          .collection('products')
+          .doc(_user!.uid)
+          .collection('products')
+          .add(productData);
 
       // Clear text controllers and images list after saving
       productNameController.clear();
       descriptionController.clear();
       stockController.clear();
-      _images.clear();
+      setState(() {
+        _image = null;
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Product saved successfully')),
       );
+      Navigator.pushNamed(context, 'mechanic_dashboard');
     } catch (error) {
       print('Error saving product: $error');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -103,24 +120,23 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  Future<void> pickImages() async {
+  Future<void> pickImage() async {
     try {
-      final pickedFiles = await picker.pickMultiImage(
+      final pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
         maxWidth: 800,
-      imageQuality: 50,
-      maxHeight: 5,
-       
+        imageQuality: 50,
       );
 
       setState(() {
-        if (pickedFiles != null) {
-          _images = pickedFiles.map((file) => File(file.path)).toList();
+        if (pickedFile != null) {
+          _image = File(pickedFile.path);
         } else {
-          print('No images selected.');
+          print('No image selected.');
         }
       });
     } catch (error) {
-      print('Error picking images: $error');
+      print('Error picking image: $error');
     }
   }
 
@@ -132,70 +148,93 @@ class _AddProductScreenState extends State<AddProductScreen> {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Shop Name: $shopName',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: productNameController,
-              decoration: InputDecoration(labelText: 'Product Name'),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
-              maxLines: null,
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: stockController,
-              decoration: InputDecoration(labelText: 'Stock Available'),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20),
-            Text('Upload Product Images'),
-            SizedBox(height: 10),
-            _images.isEmpty
-                ? ElevatedButton(
-                    onPressed: pickImages,
-                    child: Text('Select Images'),
-                  )
-                : Column(
-                    children: [
-                      SizedBox(height: 10),
-                      GridView.count(
-                        shrinkWrap: true,
-                        crossAxisCount: 3,
-                        children: List.generate(_images.length, (index) {
-                          return Image.file(_images[index]);
-                        }),
-                      ),
-                    ],
-                  ),
-            SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: saveProduct,
-                child: Text('Save Product'),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Shop Name: $shopName',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              TextFormField(
+                controller: productNameController,
+                decoration: InputDecoration(labelText: 'Product Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the product name';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: descriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
+                maxLines: null,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the description';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: stockController,
+                decoration: InputDecoration(labelText: 'Stock Available'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the stock available';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              Text('Upload Product Image'),
+              SizedBox(height: 10),
+              Center(
+                child: GestureDetector(
+                  onTap: pickImage,
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage: _image != null ? FileImage(_image!) : null,
+                    child: _image == null
+                        ? Icon(Icons.camera_alt, size: 60)
+                        : Align(
+                            alignment: Alignment.bottomRight,
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              radius: 20,
+                              child:
+                                  Icon(Icons.camera_alt, color: Colors.black),
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: saveProduct,
+                  child: Text('Save Product'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: MechanicBottomNavigationBar(
         onTap: (index) {
           if (index == 0) {
-             Navigator.pushNamed(context, 'mechanic_dashboard');
+            Navigator.pushNamed(context, 'mechanic_dashboard');
           } else if (index == 1) {
-             Navigator.pushNamed(context, 'mechanic_dashboard');
+            Navigator.pushNamed(context, 'mechanic_dashboard');
           } else if (index == 2) {
             Navigator.pushNamed(context, 'addproducts');
-          }
-          else if(index==3){
+          } else if (index == 3) {
             Navigator.pushNamed(context, 'mechanic_profile');
           }
         },
