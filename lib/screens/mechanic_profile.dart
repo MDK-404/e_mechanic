@@ -1,291 +1,238 @@
-import 'package:e_mechanic/screens/mechanic_navbar.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
-class MechanicProfile extends StatefulWidget {
-  const MechanicProfile({Key? key}) : super(key: key);
+class BookAppointmentScreen extends StatefulWidget {
+  const BookAppointmentScreen({Key? key}) : super(key: key);
 
   @override
-  _MechanicProfileState createState() => _MechanicProfileState();
+  _BookAppointmentScreenState createState() => _BookAppointmentScreenState();
 }
 
-class _MechanicProfileState extends State<MechanicProfile> {
-  final TextEditingController shopNameController = TextEditingController();
-  final TextEditingController cityController = TextEditingController();
-  final TextEditingController areaController = TextEditingController();
-  String phoneNumber = '';
-  late String shopType = '';
-  late List<String> servicesAvailable = [];
-  late String shopTiming = '';
-  late Map<String, bool> availability = {
-    'Monday': false,
-    'Tuesday': false,
-    'Wednesday': false,
-    'Thursday': false,
-    'Friday': false,
-    'Saturday': false,
-    'Sunday': false,
-  };
-  late String profileImageUrl = '';
+class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
+  DateTime _selectedDate = DateTime.now();
+  String _selectedCity = '';
+  String _selectedVehicleType = 'Car';
+  String _selectedShop = '';
+  List<String> _selectedServices = [];
+  List<String> _services = ['Tuning', 'Electric Work', 'Complete Engine Work'];
+  List<String> _shopOptions = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  late File? _image; // Initialize with null
-  final picker = ImagePicker();
-
-  @override
-  void initState() {
-    super.initState();
-    _image = null; // Initialize with null in initState
-    // Fetching user's phone number from Firebase Authentication
-    final auth = FirebaseAuth.instance;
-    User? user = auth.currentUser;
-    //phoneNumber = user!.phoneNumber!;
-  }
-
-  Future getImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
+  // Function to handle date selection
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate) {
+      // Check if the mechanic is available on the selected date
+      final bool isAvailable = await _isMechanicAvailable(_selectedShop, picked);
+      if (isAvailable) {
+        setState(() {
+          _selectedDate = picked;
+        });
       } else {
-        print('No image selected.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('The selected mechanic is not available on this date.')),
+        );
       }
-    });
-  }
-
-  void _saveProfile() async {
-    if (_image != null ||
-        shopNameController.text.isNotEmpty ||
-        cityController.text.isNotEmpty ||
-        areaController.text.isNotEmpty ||
-        shopType.isNotEmpty ||
-        servicesAvailable.isNotEmpty ||
-        shopTiming.isNotEmpty) {
-      // Check if image is selected
-      String profileImageUrl = '';
-      if (_image != null) {
-        // Upload image to Firebase Storage
-        String imageFileName = DateTime.now().millisecondsSinceEpoch.toString();
-        firebase_storage.Reference ref = firebase_storage
-            .FirebaseStorage.instance
-            .ref()
-            .child('mechanic_profile_images')
-            .child('$imageFileName.jpg');
-        await ref.putFile(_image!);
-
-        // Get download URL for the uploaded image
-        profileImageUrl = await ref.getDownloadURL();
-      }
-
-      // Save mechanic data to Firestore
-      FirebaseFirestore.instance.collection('mechanics').doc(phoneNumber).set({
-        'shopName': shopNameController.text,
-        'phoneNumber': phoneNumber,
-        'profileImageUrl': profileImageUrl,
-        'city': cityController.text,
-        'area': areaController.text,
-        'shopType': shopType,
-        'servicesAvailable': servicesAvailable,
-        'shopTiming': shopTiming,
-        'availability': availability,
-      });
-
-      // Navigate to mechanic's dashboard or any other screen after saving profile
-      Navigator.pushReplacementNamed(context, 'mechanic_dashboard');
-    } else {
-      // Show error if any field is empty
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please fill all the fields.'),
-        ),
-      );
     }
   }
 
-  void _logout() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.pushNamed(context, 'mainscreen');
+  // Mapping from weekday number to weekday name
+  final Map<int, String> _weekdayNames = {
+    1: 'Monday',
+    2: 'Tuesday',
+    3: 'Wednesday',
+    4: 'Thursday',
+    5: 'Friday',
+    6: 'Saturday',
+    7: 'Sunday',
+  };
+
+  Future<bool> _isMechanicAvailable(String shop, DateTime date) async {
+    final mechanicSnapshot = await _firestore.collection('mechanics').doc(shop).get();
+    if (!mechanicSnapshot.exists) return false;
+
+    final Map<String, dynamic> availability = mechanicSnapshot.get('availability');
+    final String dayOfWeek = _weekdayNames[date.weekday]!; // Convert weekday number to name
+
+    return availability[dayOfWeek] ?? false;
+  }
+
+  void _fetchShops(String city, String vehicleType) async {
+    final QuerySnapshot shopsSnapshot = await _firestore
+        .collection('mechanics')
+        .where('city', isEqualTo: city)
+        .where('shopType', isEqualTo: vehicleType == 'Car' ? 'car workshop' : 'bike workshop')
+        .get();
+    setState(() {
+      _shopOptions = shopsSnapshot.docs
+          .map<String>((doc) => '${doc.get('shopName')} - ${doc.get('area')}')
+          .toList();
+    });
+  }
+
+  void _confirmBooking() async {
+    if (_selectedCity.isEmpty || _selectedShop.isEmpty || _selectedServices.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in all the required fields.')),
+      );
+      return;
+    }
+
+    // Save the booking details in Firestore
+    final bookingData = {
+      'city': _selectedCity,
+      'shop': _selectedShop,
+      'date': _selectedDate,
+      'services': _selectedServices,
+      'status': 'pending',
+    };
+
+    await _firestore.collection('bookings').add(bookingData);
+
+    // Send notification to the mechanic
+    // (you can implement this using Firebase Cloud Messaging or a similar service)
+
+    // Show confirmation dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Booking Confirmed'),
+          content: Text('Your request has been sent and you will get an update after confirmation from the mechanic.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Profile'),
-        actions: [
-          IconButton(
-            onPressed: _logout,
-            icon: Icon(Icons.logout),
-          ),
-        ],
+        title: Text('Book Appointment'),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(
-              child: GestureDetector(
-                onTap: getImage,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: _image != null
-                      ? FileImage(_image!)
-                      : NetworkImage(profileImageUrl) as ImageProvider,
-                  child: _image == null
-                      ? Icon(
-                          Icons.camera_alt,
-                          size: 40,
-                        )
-                      : null,
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: shopNameController,
-              decoration: InputDecoration(
-                labelText: 'Shop Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: TextEditingController(text: phoneNumber),
-              enabled: false,
-              decoration: InputDecoration(
-                labelText: 'Phone Number',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: cityController,
-              decoration: InputDecoration(
-                labelText: 'City',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: areaController,
-              decoration: InputDecoration(
-                labelText: 'Area',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              children: [
-                Radio(
-                  value: 'Car Workshop',
-                  groupValue: shopType,
-                  onChanged: (value) {
-                    setState(() {
-                      shopType = value.toString();
-                    });
-                  },
-                ),
-                Text('Car Workshop'),
-                Radio(
-                  value: 'Bike Workshop',
-                  groupValue: shopType,
-                  onChanged: (value) {
-                    setState(() {
-                      shopType = value.toString();
-                    });
-                  },
-                ),
-                Text('Bike Workshop'),
-              ],
-            ),
-            SizedBox(height: 20),
-            DropdownButtonFormField(
-              decoration: InputDecoration(
-                labelText: 'Services Available',
-                border: OutlineInputBorder(),
-              ),
-              value: null,
-              items: [
-                DropdownMenuItem(
-                  child: Text('Tuning'),
-                  value: 'Tuning',
-                ),
-                DropdownMenuItem(
-                  child: Text('Denting'),
-                  value: 'Denting',
-                ),
-                DropdownMenuItem(
-                  child: Text('Electrician'),
-                  value: 'Electrician',
-                ),
-                DropdownMenuItem(
-                  child: Text('Puncture'),
-                  value: 'Puncture',
-                ),
-                DropdownMenuItem(
-                  child: Text('Car Deck System'),
-                  value: 'Car Deck System',
-                ),
-                DropdownMenuItem(
-                  child: Text('Fuel Delivery'),
-                  value: 'Fuel Delivery',
-                ),
-                DropdownMenuItem(
-                  child: Text('Auto Parts'),
-                  value: 'Auto Parts',
-                ),
-              ],
+            DropdownButtonFormField<String>(
+              value: _selectedCity,
+              hint: Text('Select City'),
+              items: ['Rawalpindi', 'Islamabad'].map((String city) {
+                return DropdownMenuItem<String>(
+                  value: city,
+                  child: Text(city),
+                );
+              }).toList(),
               onChanged: (value) {
                 setState(() {
-                  servicesAvailable.add(value.toString());
+                  _selectedCity = value!;
                 });
               },
             ),
             SizedBox(height: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: availability.keys.map((String day) {
-                return Row(
-                  children: [
-                    Checkbox(
-                      value: availability[day],
+            Text('Select Vehicle Type'),
+            Row(
+              children: [
+                Expanded(
+                  child: ListTile(
+                    title: const Text('Car'),
+                    leading: Radio<String>(
+                      value: 'Car',
+                      groupValue: _selectedVehicleType,
                       onChanged: (value) {
                         setState(() {
-                          availability[day] = value!;
+                          _selectedVehicleType = value!;
+                          _fetchShops(_selectedCity, _selectedVehicleType);
                         });
                       },
                     ),
-                    Text(day),
-                  ],
-                );
-              }).toList(),
+                  ),
+                ),
+                Expanded(
+                  child: ListTile(
+                    title: const Text('Bike'),
+                    leading: Radio<String>(
+                      value: 'Bike',
+                      groupValue: _selectedVehicleType,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedVehicleType = value!;
+                          _fetchShops(_selectedCity, _selectedVehicleType);
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _saveProfile,
-              child: Text('Save'),
+            if (_shopOptions.isNotEmpty)
+              DropdownButtonFormField<String>(
+                value: _selectedShop,
+                hint: Text('Select Mechanic Shop'),
+                items: _shopOptions.map((String shop) {
+                  return DropdownMenuItem<String>(
+                    value: shop,
+                    child: Text(shop),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedShop = value!;
+                  });
+                },
+              ),
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: Text('Selected Date: ${_selectedDate.toString().substring(0, 10)}'),
+                ),
+                TextButton(
+                  onPressed: () => _selectDate(context),
+                  child: Text('Select Date'),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            MultiSelectDialogField(
+              items: _services
+                  .map((service) => MultiSelectItem<String>(service, service))
+                  .toList(),
+              title: Text('Select Services'),
+              buttonText: Text('Select Services'),
+              initialValue: _selectedServices,
+              onConfirm: (values) {
+                setState(() {
+                  _selectedServices = values;
+                });
+              },
+            ),
+            SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: _confirmBooking,
+                child: Text('Confirm Booking'),
+              ),
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: MechanicBottomNavigationBar(
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushReplacementNamed(context, 'mechanic_dashboard');
-          } else if (index == 1) {
-            Navigator.pushReplacementNamed(context, 'mechanic_dashboard');
-          } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, 'addproducts');
-          } else if (index == 3) {
-Navigator.pushReplacementNamed(context, 'mechanic_profile');
-          }
-        },
-        currentIndex: 3,
       ),
     );
   }
