@@ -42,12 +42,23 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     }
   }
 
+  // Mapping from weekday number to weekday name
+  final Map<int, String> _weekdayNames = {
+    1: 'Monday',
+    2: 'Tuesday',
+    3: 'Wednesday',
+    4: 'Thursday',
+    5: 'Friday',
+    6: 'Saturday',
+    7: 'Sunday',
+  };
+
   Future<bool> _isMechanicAvailable(String shop, DateTime date) async {
     final mechanicSnapshot = await _firestore.collection('mechanics').doc(shop).get();
     if (!mechanicSnapshot.exists) return false;
 
     final Map<String, dynamic> availability = mechanicSnapshot.get('availability');
-    final String dayOfWeek = date.weekday.toString(); // 1 = Monday, 7 = Sunday
+    final String dayOfWeek = _weekdayNames[date.weekday]!; // Convert weekday number to name
 
     return availability[dayOfWeek] ?? false;
   }
@@ -56,7 +67,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     final QuerySnapshot shopsSnapshot = await _firestore
         .collection('mechanics')
         .where('city', isEqualTo: city)
-        .where('shopType', isEqualTo: vehicleType == 'Car' ? 'Car Workshop' : 'Bike Workshop')
+        .where('shopType', isEqualTo: vehicleType == 'Car' ? 'car workshop' : 'bike workshop')
         .get();
     setState(() {
       _shopOptions = shopsSnapshot.docs
