@@ -12,6 +12,9 @@ import 'package:e_mechanic/screens/otp.dart';
 import 'package:e_mechanic/screens/services.dart';
 
 import 'package:e_mechanic/screens/splash_screen.dart';
+import 'package:e_mechanic/shop/cart_screen.dart';
+import 'package:e_mechanic/shop/product_detail_screen.dart';
+import 'package:e_mechanic/shop/product_list_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';
@@ -49,6 +52,8 @@ class MyApp extends StatelessWidget {
         'addproducts': (context) => AddProductScreen(),
         'booking': (context) => BookAppointmentScreen(),
         'services': (context) => ServicesScreen(),
+        'cart': (context) => CartScreen(),
+        'product_list': (context) => ProductListScreen(),
         'mechanic_otp': (context) => OTPVerification(
               verificationid: 'verificationid',
             ),

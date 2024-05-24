@@ -76,17 +76,34 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   }
 
   void _fetchShops(String city, String vehicleType) async {
-    final QuerySnapshot shopsSnapshot = await _firestore
-        .collection('mechanics')
-        .where('city', isEqualTo: city)
-        .where('shopType',
-            isEqualTo: vehicleType == 'Car' ? 'car workshop' : 'bike workshop')
-        .get();
-    setState(() {
-      _shopOptions = shopsSnapshot.docs
-          .map<String>((doc) => '${doc.get('shopName')} - ${doc.get('area')}')
-          .toList();
-    });
+    print('Fetching shops for city: $city and vehicleType: $vehicleType');
+    try {
+      final QuerySnapshot shopsSnapshot = await _firestore
+          .collection('mechanics')
+          .where('city', isEqualTo: city)
+          .where('shopType',
+              isEqualTo:
+                  vehicleType == 'Car' ? 'car workshop' : 'bike workshop')
+          .get();
+
+      // Print each document to ensure correct data retrieval
+      shopsSnapshot.docs.forEach((doc) {
+        print('Shop: ${doc.data()}');
+      });
+
+      setState(() {
+        _shopOptions = shopsSnapshot.docs
+            .map<String>((doc) => '${doc.get('shopName')} - ${doc.get('area')}')
+            .toList();
+        _selectedShop = ''; // Reset selected shop
+        print('Fetched shops: $_shopOptions');
+      });
+    } catch (e) {
+      print('Error fetching shops: $e');
+      setState(() {
+        _shopOptions = [];
+      });
+    }
   }
 
   void _confirmBooking() async {
@@ -109,9 +126,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     };
 
     await _firestore.collection('bookings').add(bookingData);
-
-    // Send notification to the mechanic
-    // (you can implement this using Firebase Cloud Messaging or a similar service)
 
     // Show confirmation dialog
     showDialog(
@@ -143,62 +157,63 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            DropdownButtonFormField<String>(
-              value: _selectedCity.isNotEmpty ? _selectedCity : null,
-              hint: Text('Select City'),
-              items: ['Rawalpindi', 'Islamabad'].map((String city) {
-                return DropdownMenuItem<String>(
-                  value: city,
-                  child: Text(city),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedCity = value!;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            Text('Select Vehicle Type'),
-            Row(
-              children: [
-                Expanded(
-                  child: ListTile(
-                    title: const Text('Car'),
-                    leading: Radio<String>(
-                      value: 'Car',
-                      groupValue: _selectedVehicleType,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedVehicleType = value!;
-                          _fetchShops(_selectedCity, _selectedVehicleType);
-                        });
-                      },
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              DropdownButtonFormField<String>(
+                value: _selectedCity.isNotEmpty ? _selectedCity : null,
+                hint: Text('Select City'),
+                items: ['Rawalpindi', 'Islamabad'].map((String city) {
+                  return DropdownMenuItem<String>(
+                    value: city,
+                    child: Text(city),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCity = value!;
+                    _fetchShops(_selectedCity, _selectedVehicleType);
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              Text('Select Vehicle Type'),
+              Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                      title: const Text('Car'),
+                      leading: Radio<String>(
+                        value: 'Car',
+                        groupValue: _selectedVehicleType,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedVehicleType = value!;
+                            _fetchShops(_selectedCity, _selectedVehicleType);
+                          });
+                        },
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: ListTile(
-                    title: const Text('Bike'),
-                    leading: Radio<String>(
-                      value: 'Bike',
-                      groupValue: _selectedVehicleType,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedVehicleType = value!;
-                          _fetchShops(_selectedCity, _selectedVehicleType);
-                        });
-                      },
+                  Expanded(
+                    child: ListTile(
+                      title: const Text('Bike'),
+                      leading: Radio<String>(
+                        value: 'Bike',
+                        groupValue: _selectedVehicleType,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedVehicleType = value!;
+                            _fetchShops(_selectedCity, _selectedVehicleType);
+                          });
+                        },
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            if (_shopOptions.isNotEmpty)
+                ],
+              ),
+              SizedBox(height: 20),
               DropdownButtonFormField<String>(
                 value: _selectedShop.isNotEmpty ? _selectedShop : null,
                 hint: Text('Select Mechanic Shop'),
@@ -214,41 +229,42 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                   });
                 },
               ),
-            SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                      'Selected Date: ${_selectedDate.toString().substring(0, 10)}'),
-                ),
-                TextButton(
-                  onPressed: () => _selectDate(context),
-                  child: Text('Select Date'),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            MultiSelectDialogField(
-              items: _services
-                  .map((service) => MultiSelectItem<String>(service, service))
-                  .toList(),
-              title: Text('Select Services'),
-              buttonText: Text('Select Services'),
-              initialValue: _selectedServices,
-              onConfirm: (values) {
-                setState(() {
-                  _selectedServices = values;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: _confirmBooking,
-                child: Text('Confirm Booking'),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                        'Selected Date: ${_selectedDate.toString().substring(0, 10)}'),
+                  ),
+                  TextButton(
+                    onPressed: () => _selectDate(context),
+                    child: Text('Select Date'),
+                  ),
+                ],
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              MultiSelectDialogField(
+                items: _services
+                    .map((service) => MultiSelectItem<String>(service, service))
+                    .toList(),
+                title: Text('Select Services'),
+                buttonText: Text('Select Services'),
+                initialValue: _selectedServices,
+                onConfirm: (values) {
+                  setState(() {
+                    _selectedServices = values;
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _confirmBooking,
+                  child: Text('Confirm Booking'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: MyBottomNavigationBar(
