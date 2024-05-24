@@ -11,31 +11,49 @@ class CustomerHomeScreen extends StatefulWidget {
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   final auth = FirebaseAuth.instance;
   final firestore = FirebaseFirestore.instance;
-
+  String? name;
+  late String phoneNumber;
   String? username;
   String? profileImageUrl;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
-  }
+    // _fetchUserData();
 
-  Future<void> _fetchUserData() async {
     User? user = auth.currentUser;
+    phoneNumber = user!.phoneNumber!;
 
-    if (user != null) {
-      DocumentSnapshot userDoc =
-          await firestore.collection('customers').doc(user.uid).get();
-
-      if (userDoc.exists) {
+    // Fetch user data from Firestore
+    FirebaseFirestore.instance
+        .collection('customers')
+        .doc(phoneNumber)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
         setState(() {
-          username = userDoc.get('name') ?? 'User';
-          profileImageUrl = userDoc.get('profileImageUrl');
+          username = documentSnapshot.get('name');
+          profileImageUrl = documentSnapshot.get('profileImageURL');
         });
       }
-    }
+    });
   }
+
+  // Future<void> _fetchUserData() async {
+  //   User? user = auth.currentUser;
+
+  //   if (user != null) {
+  //     DocumentSnapshot userDoc =
+  //         await firestore.collection('customers').doc(user.uid).get();
+
+  //     if (userDoc.exists) {
+  //       setState(() {
+  //         username = userDoc.get('name') ?? 'User';
+  //         profileImageUrl = userDoc.get('profileImageUrl');
+  //       });
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

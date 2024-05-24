@@ -1,4 +1,3 @@
-import 'package:e_mechanic/screens/customer_login.dart';
 import 'package:e_mechanic/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

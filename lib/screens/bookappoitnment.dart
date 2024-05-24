@@ -29,18 +29,23 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       lastDate: DateTime(2101),
     );
     if (picked != null && picked != _selectedDate) {
-      // Check if the mechanic is available on the selected date
-      final bool isAvailable =
-          await _isMechanicAvailable(_selectedShop, picked);
-      if (isAvailable) {
-        setState(() {
-          _selectedDate = picked;
-        });
+      if (_selectedShop.isNotEmpty) {
+        final bool isAvailable =
+            await _isMechanicAvailable(_selectedShop, picked);
+        if (isAvailable) {
+          setState(() {
+            _selectedDate = picked;
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'The selected mechanic is not available on this date.')),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text('The selected mechanic is not available on this date.')),
+          SnackBar(content: Text('Please select a mechanic shop first.')),
         );
       }
     }
@@ -57,9 +62,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     7: 'Sunday',
   };
 
-  Future<bool> _isMechanicAvailable(String shop, DateTime date) async {
+  Future<bool> _isMechanicAvailable(String shopName, DateTime date) async {
     final mechanicSnapshot =
-        await _firestore.collection('mechanics').doc(shop).get();
+        await _firestore.collection('mechanics').doc(shopName).get();
     if (!mechanicSnapshot.exists) return false;
 
     final Map<String, dynamic> availability =
@@ -142,7 +147,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             DropdownButtonFormField<String>(
-              value: _selectedCity,
+              value: _selectedCity.isNotEmpty ? _selectedCity : null,
               hint: Text('Select City'),
               items: ['Rawalpindi', 'Islamabad'].map((String city) {
                 return DropdownMenuItem<String>(
@@ -195,12 +200,12 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             SizedBox(height: 20),
             if (_shopOptions.isNotEmpty)
               DropdownButtonFormField<String>(
-                value: _selectedShop,
+                value: _selectedShop.isNotEmpty ? _selectedShop : null,
                 hint: Text('Select Mechanic Shop'),
-                items: _shopOptions.map((String shop) {
+                items: _shopOptions.map((String shopName) {
                   return DropdownMenuItem<String>(
-                    value: shop,
-                    child: Text(shop),
+                    value: shopName,
+                    child: Text(shopName),
                   );
                 }).toList(),
                 onChanged: (value) {

@@ -15,14 +15,12 @@ class CustomerLogin extends StatefulWidget {
 
 class _CustomerLoginState extends State<CustomerLogin> {
   bool loading = false;
-  // Mobile number input ke liye controller
 
   final TextEditingController countryController = TextEditingController();
   var phone = "";
   final auth = FirebaseAuth.instance;
   @override
   void initState() {
-    // TODO: implement initState
     countryController.text = "+92";
     super.initState();
   }
