@@ -8,9 +8,9 @@ import 'package:e_mechanic/screens/mechanic_dashboard.dart';
 import 'package:e_mechanic/screens/mechanic_login.dart';
 import 'package:e_mechanic/screens/mechanic_otp.dart';
 import 'package:e_mechanic/screens/mechanic_profile.dart';
- 
 import 'package:e_mechanic/screens/otp.dart';
-//import 'package:e_mechanic/screens/otp.dart';
+import 'package:e_mechanic/screens/services.dart';
+
 import 'package:e_mechanic/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -47,7 +47,8 @@ class MyApp extends StatelessWidget {
         'mechanic_profile': (context) => MechanicProfile(),
         'mechanic_login': (context) => MechanciLogin(),
         'addproducts': (context) => AddProductScreen(),
-         'booking': (context) => BookAppointmentScreen(),
+        'booking': (context) => BookAppointmentScreen(),
+        'services': (context) => ServicesScreen(),
         'mechanic_otp': (context) => OTPVerification(
               verificationid: 'verificationid',
             ),

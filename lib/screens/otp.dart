@@ -94,10 +94,6 @@ class _MyVerifyState extends State<MyVerify> {
                 onChanged: (value) {
                   code = value;
                 },
-                // defaultPinTheme: defaultPinTheme,
-                // focusedPinTheme: focusedPinTheme,
-                // submittedPinTheme: submittedPinTheme,
-
                 onCompleted: (pin) => print(pin),
               ),
               const SizedBox(
@@ -108,8 +104,6 @@ class _MyVerifyState extends State<MyVerify> {
                 height: 45,
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-
-                        // backgroundColor: Colors.green.shade600,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10))),
                     onPressed: () async {

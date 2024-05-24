@@ -8,30 +8,18 @@ class ServicesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       
       bottomNavigationBar: MyBottomNavigationBar(
         onTap: (index) {
           if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CustomerHomeScreen()),
-            );
+            Navigator.pushReplacementNamed(context, 'customer_home');
           } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ServicesScreen()),
-            );
+            Navigator.pushReplacementNamed(context, 'services');
           } else if (index == 2) {
-          } else if (index == 3) {}
+            Navigator.pushReplacementNamed(context, 'customer_profile');
+          }
         },
         currentIndex: 1,
       ),
-      // bottomNavigationBar: MyBottomNavigationBar(
-      //   currentIndex: 1, // Set the current index
-      //   onTap: (index) {
-      //     NavigationHandler.handleNavigation(context, index);
-      //   },
-      // ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -50,24 +38,18 @@ class ServicesScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Service rows with separating lines
+
           Column(
             children: [
               buildServiceRow(context, 'Autoparts', AutopartsScreen()),
-              Divider(), // Adding a divider after the row
+              Divider(),
             ],
           ),
-            Column(
-            children: [
-          buildServiceRow(
-           context, 'Book Appointments', BookAppointmentScreen()),
-          Divider(), // Adding a divider after the row
-           ],
-           ),
           Column(
             children: [
-              buildServiceRow(context, 'Fuel', FuelScreen()),
-              Divider(), // Adding a divider after the row
+              buildServiceRow(
+                  context, 'Book Appointments', BookAppointmentScreen()),
+              Divider(),
             ],
           ),
         ],
@@ -113,37 +95,6 @@ class AutopartsScreen extends StatelessWidget {
       ),
       body: Center(
         child: Text('Autoparts Screen'), // Placeholder for Autoparts screen
-      ),
-    );
-  }
-}
-
-// class BookAppointmentScreen extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Book Appointments'),
-//         centerTitle: true,
-//       ),
-//       body: Center(
-//         child: Text(
-//             'Book Appointment Screen'), // Placeholder for Book Appointment screen
-//       ),
-//     );
-//   }
-// }
-
-class FuelScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Fuel'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Text('Fuel Screen'), // Placeholder for Fuel screen
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:e_mechanic/screens/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -81,7 +82,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
         'profileImageURL': profileImageURL,
       });
 
-      // Navigate to home screen or any other screen after saving profile
+      // Navigate to home screen
       Navigator.pushReplacementNamed(context, 'customer_home');
     } else {
       // Show error if image or name is not selected
@@ -154,6 +155,18 @@ class _CustomerProfileState extends State<CustomerProfile> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: MyBottomNavigationBar(
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushReplacementNamed(context, 'customer_home');
+          } else if (index == 1) {
+            Navigator.pushReplacementNamed(context, 'services');
+          } else if (index == 2) {
+            Navigator.pushReplacementNamed(context, 'customer_profile');
+          }
+        },
+        currentIndex: 2,
       ),
     );
   }

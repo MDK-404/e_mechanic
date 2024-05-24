@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_mechanic/screens/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
@@ -29,14 +30,17 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     );
     if (picked != null && picked != _selectedDate) {
       // Check if the mechanic is available on the selected date
-      final bool isAvailable = await _isMechanicAvailable(_selectedShop, picked);
+      final bool isAvailable =
+          await _isMechanicAvailable(_selectedShop, picked);
       if (isAvailable) {
         setState(() {
           _selectedDate = picked;
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('The selected mechanic is not available on this date.')),
+          SnackBar(
+              content:
+                  Text('The selected mechanic is not available on this date.')),
         );
       }
     }
@@ -54,11 +58,14 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   };
 
   Future<bool> _isMechanicAvailable(String shop, DateTime date) async {
-    final mechanicSnapshot = await _firestore.collection('mechanics').doc(shop).get();
+    final mechanicSnapshot =
+        await _firestore.collection('mechanics').doc(shop).get();
     if (!mechanicSnapshot.exists) return false;
 
-    final Map<String, dynamic> availability = mechanicSnapshot.get('availability');
-    final String dayOfWeek = _weekdayNames[date.weekday]!; // Convert weekday number to name
+    final Map<String, dynamic> availability =
+        mechanicSnapshot.get('availability');
+    final String dayOfWeek =
+        _weekdayNames[date.weekday]!; // Convert weekday number to name
 
     return availability[dayOfWeek] ?? false;
   }
@@ -67,7 +74,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     final QuerySnapshot shopsSnapshot = await _firestore
         .collection('mechanics')
         .where('city', isEqualTo: city)
-        .where('shopType', isEqualTo: vehicleType == 'Car' ? 'car workshop' : 'bike workshop')
+        .where('shopType',
+            isEqualTo: vehicleType == 'Car' ? 'car workshop' : 'bike workshop')
         .get();
     setState(() {
       _shopOptions = shopsSnapshot.docs
@@ -77,7 +85,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   }
 
   void _confirmBooking() async {
-    if (_selectedCity.isEmpty || _selectedShop.isEmpty || _selectedServices.isEmpty) {
+    if (_selectedCity.isEmpty ||
+        _selectedShop.isEmpty ||
+        _selectedServices.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please fill in all the required fields.')),
       );
@@ -104,7 +114,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Booking Confirmed'),
-          content: Text('Your request has been sent and you will get an update after confirmation from the mechanic.'),
+          content: Text(
+              'Your request has been sent and you will get an update after confirmation from the mechanic.'),
           actions: [
             TextButton(
               onPressed: () {
@@ -202,7 +213,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             Row(
               children: [
                 Expanded(
-                  child: Text('Selected Date: ${_selectedDate.toString().substring(0, 10)}'),
+                  child: Text(
+                      'Selected Date: ${_selectedDate.toString().substring(0, 10)}'),
                 ),
                 TextButton(
                   onPressed: () => _selectDate(context),
@@ -233,6 +245,18 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: MyBottomNavigationBar(
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushReplacementNamed(context, 'customer_home');
+          } else if (index == 1) {
+            Navigator.pushReplacementNamed(context, 'services');
+          } else if (index == 2) {
+            Navigator.pushReplacementNamed(context, 'customer_profile');
+          }
+        },
+        currentIndex: 0,
       ),
     );
   }

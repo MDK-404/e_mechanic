@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     if (auth.currentUser != null) {
-      Timer(Duration(seconds: 2), () {
+      Timer(Duration(seconds: 5), () {
         var currentUser = auth.currentUser!;
         var phoneNumber = currentUser.phoneNumber;
         // Check if user exists in the customer collection

@@ -92,7 +92,7 @@ class MainScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, 'bookappointment');
+                      Navigator.pushNamed(context, 'customerLogin');
                       userType = "customer"; // Customer type select karo
                     },
                     child: Text(

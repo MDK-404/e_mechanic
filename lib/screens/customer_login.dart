@@ -133,7 +133,6 @@ class _CustomerLoginState extends State<CustomerLogin> {
                             Utils().toastMessage(e.toString());
                           },
                           codeSent: (String verificationid, int? token) {
-                            // CustomerLogin.verify = verificationid;
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(

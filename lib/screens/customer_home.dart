@@ -1,8 +1,7 @@
-import 'package:e_mechanic/screens/navbar.dart';
-import 'package:e_mechanic/screens/navigationhandler.dart';
-import 'package:e_mechanic/screens/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:e_mechanic/screens/navbar.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
   @override
@@ -11,6 +10,33 @@ class CustomerHomeScreen extends StatefulWidget {
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   final auth = FirebaseAuth.instance;
+  final firestore = FirebaseFirestore.instance;
+
+  String? username;
+  String? profileImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    User? user = auth.currentUser;
+
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await firestore.collection('customers').doc(user.uid).get();
+
+      if (userDoc.exists) {
+        setState(() {
+          username = userDoc.get('name') ?? 'User';
+          profileImageUrl = userDoc.get('profileImageUrl');
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,18 +46,16 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       //   ),
       body: Stack(
         children: [
-          // Google Maps ki image ko set karne ke liye Container
           Positioned.fill(
             child: Image.asset(
-              'assets/images/map1.jpg', // Google map ki image ka path
-              fit: BoxFit.cover, // Image ko container mein fill karne ke liye
+              'assets/images/map1.jpg',
+              fit: BoxFit.cover,
             ),
           ),
-          // Text aur circular image ko show karne ke liye Positioned widget
           Positioned(
-            top: 0.0, // App bar se distance adjust karne ke liye
-            left: 0, // Screen ki left side se shuru karne ke liye
-            right: 0, // Screen ki right side tak extend karne ke liye
+            top: 0.0,
+            left: 0,
+            right: 0,
             child: Card(
               elevation: 6.0,
               shape: RoundedRectangleBorder(
@@ -52,15 +76,14 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ),
                         SizedBox(width: 8.0),
                         Text(
-                          'Hello (username)',
+                          'Hello ${username ?? '(username)'}',
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),
                         ),
-                        Spacer(), // Space fill karne ke liye
-                        // Circular image ke liye
+                        Spacer(),
                         InkWell(
                           onTap: () {
                             auth.signOut();
@@ -68,9 +91,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                           },
                           child: CircleAvatar(
                             radius: 24.0,
-                            backgroundImage: AssetImage(
-                              'assets/images/customer_login.jpeg',
-                            ),
+                            backgroundImage: profileImageUrl != null
+                                ? NetworkImage(profileImageUrl!)
+                                    as ImageProvider
+                                : AssetImage(
+                                        'assets/images/customer_login.jpeg')
+                                    as ImageProvider,
+                            backgroundColor: Colors.transparent,
                           ),
                         ),
                       ],
@@ -88,16 +115,15 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               ),
             ),
           ),
-          // Bottom right corner mein button
           Positioned(
             bottom: 20.0,
             right: 20.0,
             child: ElevatedButton(
               onPressed: () {
-                // Button click par action
+                // Handle service request
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue, // Button ka color
+                backgroundColor: Colors.blue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
                 ),
@@ -116,13 +142,10 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       bottomNavigationBar: MyBottomNavigationBar(
         onTap: (index) {
           if (index == 0) {
+            Navigator.pushReplacementNamed(context, 'customer_home');
           } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ServicesScreen()),
-            );
+            Navigator.pushReplacementNamed(context, 'services');
           } else if (index == 2) {
-          } else if (index == 3) {
             Navigator.pushReplacementNamed(context, 'customer_profile');
           }
         },
