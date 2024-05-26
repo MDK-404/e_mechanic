@@ -16,13 +16,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   DateTime _selectedDate = DateTime.now();
   String _selectedCity = '';
   String _selectedVehicleType = 'Car';
-  String? _selectedShop;
+  String _selectedShop = '';
   List<String> _shopOptions = [];
   bool _isLoadingShops = false;
   List<String> _selectedServices = [];
   List<String> _services = ['Tuning', 'Electric Work', 'Complete Engine Work'];
   List<String> shopTypes = [];
-  List<String> shopAreas = [];
   String? selectedShopType;
   String? selectedarea;
   String? city;
@@ -47,7 +46,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       snapshot.docs.forEach((doc) {
         var data = doc.data() as Map<String, dynamic>;
         if (data['shopName'] != null && data['area'] != null) {
-          tempShopTypes.add('${data['shopName']} - ${data['area']}');
+          tempShopTypes.add('${data['shopName']} -${data['area']}');
           tempAvailability[data['shopName']] = data['availability'];
         }
         if (data['area'] != null) {
@@ -122,7 +121,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     );
     if (pickedDate != null && pickedDate != _selectedDate) {
       String dayOfWeek = _getDayOfWeek(pickedDate);
-      bool isShopOpen = shopAvailability[_selectedShop]?[dayOfWeek] ?? true;
+      bool isShopOpen = shopAvailability[selectedShopType]?[dayOfWeek] ?? true;
 
       if (isShopOpen) {
         setState(() {
