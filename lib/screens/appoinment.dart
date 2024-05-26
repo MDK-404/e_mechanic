@@ -39,14 +39,13 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       QuerySnapshot snapshot =
           await FirebaseFirestore.instance.collection('mechanics').get();
       List<String> tempShopTypes = [];
-      List<String> tempShopAreas = [];
       String? tempCity;
       List<String> tempArea = [];
       Map<String, dynamic> tempAvailability = {};
       snapshot.docs.forEach((doc) {
         var data = doc.data() as Map<String, dynamic>;
-        if (data['shopName'] != null && data['area'] != null) {
-          tempShopTypes.add('${data['shopName']} -${data['area']}');
+        if (data['shopName'] != null) {
+          tempShopTypes.add(data['shopName']);
           tempAvailability[data['shopName']] = data['availability'];
         }
         if (data['area'] != null) {

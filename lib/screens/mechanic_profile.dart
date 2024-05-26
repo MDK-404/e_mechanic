@@ -278,14 +278,12 @@ class _MechanicProfileState extends State<MechanicProfile> {
           if (index == 0) {
             Navigator.pushReplacementNamed(context, 'mechanic_dashboard');
           } else if (index == 1) {
-            Navigator.pushReplacementNamed(context, 'mechanic_dashboard');
-          } else if (index == 2) {
             Navigator.pushReplacementNamed(context, 'addproducts');
-          } else if (index == 3) {
-Navigator.pushReplacementNamed(context, 'mechanic_profile');
+          } else if (index == 2) {
+            Navigator.pushReplacementNamed(context, 'mechanic_profile');
           }
         },
-        currentIndex: 3,
+        currentIndex: 2,
       ),
     );
   }

@@ -20,13 +20,9 @@ class MechanicBottomNavigationBar extends StatelessWidget {
       selectedItemColor: Colors.black,
       unselectedItemColor: Colors.grey,
       items: const [
-         BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.request_page),
-          label: 'Check Request',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.add_box),

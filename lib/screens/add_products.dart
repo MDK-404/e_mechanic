@@ -231,14 +231,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
           if (index == 0) {
             Navigator.pushNamed(context, 'mechanic_dashboard');
           } else if (index == 1) {
-            Navigator.pushNamed(context, 'mechanic_dashboard');
-          } else if (index == 2) {
             Navigator.pushNamed(context, 'addproducts');
-          } else if (index == 3) {
+          } else if (index == 2) {
             Navigator.pushNamed(context, 'mechanic_profile');
           }
         },
-        currentIndex: 2,
+        currentIndex: 1,
       ),
     );
   }

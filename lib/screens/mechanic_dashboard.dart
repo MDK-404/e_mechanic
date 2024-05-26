@@ -20,10 +20,8 @@ class _MechanicDashboardState extends State<MechanicDashboard> {
         onTap: (index) {
           if (index == 0) {
           } else if (index == 1) {
-          } else if (index == 2) {
             Navigator.pushNamed(context, 'addproducts');
-          }
-          else if(index==3){
+          } else if (index == 2) {
             Navigator.pushNamed(context, 'mechanic_profile');
           }
         },
