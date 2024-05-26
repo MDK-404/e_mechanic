@@ -1,5 +1,5 @@
 import 'package:e_mechanic/screens/add_products.dart';
-import 'package:e_mechanic/screens/bookappoitnment.dart';
+import 'package:e_mechanic/screens/appoinment.dart';
 import 'package:e_mechanic/screens/customer_home.dart';
 import 'package:e_mechanic/screens/customer_login.dart';
 import 'package:e_mechanic/screens/customer_profile.dart';
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
         'mechanic_profile': (context) => MechanicProfile(),
         'mechanic_login': (context) => MechanciLogin(),
         'addproducts': (context) => AddProductScreen(),
-        'booking': (context) => BookAppointmentScreen(),
+        'appoitnment': (context) => AppointmentScreen(),
         'services': (context) => ServicesScreen(),
         'cart': (context) => CartScreen(),
         'product_list': (context) => ProductListScreen(),

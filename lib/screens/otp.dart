@@ -112,7 +112,13 @@ class _MyVerifyState extends State<MyVerify> {
 
                       try {
                         await aut.signInWithCredential(credential);
-                        Navigator.pushNamed(context, 'customer_profile');
+
+                        var user = FirebaseAuth.instance.currentUser;
+                        if (user != null) {
+                          Navigator.pushNamed(context, 'customer_home');
+                        } else {
+                          Navigator.pushNamed(context, 'customer_profile');
+                        }
                       } catch (e) {
                         Utils().toastMessage(e.toString());
                       }

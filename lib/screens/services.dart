@@ -1,7 +1,9 @@
-import 'package:e_mechanic/screens/bookappoitnment.dart';
+import 'package:e_mechanic/screens/appoinment.dart';
+
 import 'package:e_mechanic/screens/customer_home.dart';
 import 'package:e_mechanic/screens/navbar.dart';
 import 'package:e_mechanic/screens/navigationhandler.dart';
+import 'package:e_mechanic/shop/product_list_screen.dart';
 import 'package:flutter/material.dart';
 
 class ServicesScreen extends StatelessWidget {
@@ -41,14 +43,14 @@ class ServicesScreen extends StatelessWidget {
 
           Column(
             children: [
-              buildServiceRow(context, 'Autoparts', AutopartsScreen()),
+              buildServiceRow(context, 'Autoparts', ProductListScreen()),
               Divider(),
             ],
           ),
           Column(
             children: [
               buildServiceRow(
-                  context, 'Book Appointments', BookAppointmentScreen()),
+                  context, 'Book Appointments', AppointmentScreen()),
               Divider(),
             ],
           ),
@@ -80,21 +82,6 @@ class ServicesScreen extends StatelessWidget {
             Icon(Icons.arrow_forward_ios), // Arrow icon
           ],
         ),
-      ),
-    );
-  }
-}
-
-class AutopartsScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Autoparts'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Text('Autoparts Screen'), // Placeholder for Autoparts screen
       ),
     );
   }
