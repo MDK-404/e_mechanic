@@ -12,7 +12,20 @@
           "package_name": "com.example.e_mechanic"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "271366593977-526gk0upqoe7161t1n5ans26vbg03tib.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.e_mechanic",
+            "certificate_hash": "e51a05d9d1a926e94d9b3c129f1233ac3cf7af92"
+          }
+        },
+        {
+          "client_id": "271366593977-opa8th37dpepjt9j7v13vs4ka20q6slf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCZc0R8pV5HwDe7Gn56d4cYFasLW3asCKk"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "271366593977-opa8th37dpepjt9j7v13vs4ka20q6slf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

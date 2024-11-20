@@ -28,12 +28,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
   @override
   void initState() {
     super.initState();
-    _user = FirebaseAuth.instance.currentUser;
-    if (_user != null) {
-      fetchShopName();
-    } else {
-      print('User is not logged in.');
-    }
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      setState(() {
+        _user = user;
+      });
+      if (_user != null) {
+        fetchShopName();
+      } else {
+        print('User is not logged in.');
+      }
+    });
   }
 
   Future<void> fetchShopName() async {
@@ -42,16 +46,29 @@ class _AddProductScreenState extends State<AddProductScreen> {
       return;
     }
 
-    final mechanicPhoneNumber = _user!.phoneNumber!;
+    final String userId = _user!.uid; // Use UID instead of phone number
 
-    DocumentSnapshot mechanicSnapshot = await FirebaseFirestore.instance
-        .collection('mechanics')
-        .doc(mechanicPhoneNumber)
-        .get();
+    try {
+      DocumentSnapshot mechanicSnapshot = await FirebaseFirestore.instance
+          .collection('mechanics')
+          .doc(userId) // Fetch by UID
+          .get();
 
-    setState(() {
-      shopName = mechanicSnapshot.get('shopName') ?? '';
-    });
+      if (mechanicSnapshot.exists) {
+        setState(() {
+          shopName = mechanicSnapshot.get('shopName') ?? 'Shop Name Not Found';
+        });
+      } else {
+        setState(() {
+          shopName = 'Shop Name Not Found';
+        });
+      }
+    } catch (error) {
+      print('Error fetching shop name: $error');
+      setState(() {
+        shopName = 'Error Fetching Shop Name';
+      });
+    }
   }
 
   Future<String> uploadImage(File image) async {
@@ -92,13 +109,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
         'description': description,
         'stockAvailable': stockAvailable,
         'image': imageUrl,
+        'shopName': shopName, // Include shop name with product
       };
 
-      await FirebaseFirestore.instance
-          .collection('products')
-          .doc(_user!.uid)
-          .collection('products')
-          .add(productData);
+      await FirebaseFirestore.instance.collection('products').add({
+        ...productData, // Existing product data
+        'userId': _user!.uid, // Add user ID
+      });
 
       // Clear text controllers and images list after saving
       productNameController.clear();

@@ -39,7 +39,6 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const SplashScreen(),
-      // Routes define kiye ja rahe hain
       routes: {
         'splash': (context) => const SplashScreen(),
         'mainscreen': (context) => MainScreen(),
@@ -48,7 +47,7 @@ class MyApp extends StatelessWidget {
         'customer_profile': (context) => CustomerProfile(),
         'mechanic_dashboard': (context) => MechanicDashboard(),
         'mechanic_profile': (context) => MechanicProfile(),
-        'mechanic_login': (context) => MechanciLogin(),
+        'mechanic_login': (context) => MechanicLogin(),
         'addproducts': (context) => AddProductScreen(),
         'appoitnment': (context) => AppointmentScreen(),
         'services': (context) => ServicesScreen(),
@@ -57,6 +56,8 @@ class MyApp extends StatelessWidget {
         'mechanic_otp': (context) => OTPVerification(
               verificationid: 'verificationid',
             ),
+
+        // below otp verification route is  for user
         'otp': (context) => MyVerify(
               verificationid: 'verificationid',
             ),
