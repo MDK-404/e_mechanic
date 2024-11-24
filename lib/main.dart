@@ -10,11 +10,10 @@ import 'package:e_mechanic/screens/mechanic_otp.dart';
 import 'package:e_mechanic/screens/mechanic_profile.dart';
 import 'package:e_mechanic/screens/otp.dart';
 import 'package:e_mechanic/screens/services.dart';
-
 import 'package:e_mechanic/screens/splash_screen.dart';
-import 'package:e_mechanic/shop/cart_screen.dart';
-import 'package:e_mechanic/shop/product_detail_screen.dart';
-import 'package:e_mechanic/shop/product_list_screen.dart';
+import 'package:e_mechanic/shop/screens/product_detail_screen.dart';
+import 'package:e_mechanic/shop/screens/product_list_screen.dart';
+import 'package:e_mechanic/shop/services/cart_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';

@@ -3,7 +3,7 @@ import 'package:e_mechanic/screens/appoinment.dart';
 import 'package:e_mechanic/screens/customer_home.dart';
 import 'package:e_mechanic/screens/navbar.dart';
 import 'package:e_mechanic/screens/navigationhandler.dart';
-import 'package:e_mechanic/shop/product_list_screen.dart';
+import 'package:e_mechanic/shop/screens/product_list_screen.dart';
 import 'package:flutter/material.dart';
 
 class ServicesScreen extends StatelessWidget {

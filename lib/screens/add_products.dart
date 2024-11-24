@@ -16,6 +16,7 @@ class AddProductScreen extends StatefulWidget {
 class _AddProductScreenState extends State<AddProductScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController productNameController = TextEditingController();
+  final TextEditingController productPriceController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController stockController = TextEditingController();
 
@@ -98,6 +99,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
 
     final productName = productNameController.text;
+    final productPrice = productPriceController.text;
     final description = descriptionController.text;
     final stockAvailable = int.tryParse(stockController.text) ?? 0;
 
@@ -107,6 +109,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       final productData = {
         'productName': productName,
         'description': description,
+        'price': productPrice,
         'stockAvailable': stockAvailable,
         'image': imageUrl,
         'shopName': shopName, // Include shop name with product
@@ -119,6 +122,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
       // Clear text controllers and images list after saving
       productNameController.clear();
+      productPriceController.clear();
       descriptionController.clear();
       stockController.clear();
       setState(() {
@@ -193,6 +197,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the description';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: productPriceController,
+                decoration: InputDecoration(labelText: 'Price'),
+                maxLines: null,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the Price';
                   }
                   return null;
                 },

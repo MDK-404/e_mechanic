@@ -17,7 +17,7 @@ class _MechanicDashboardState extends State<MechanicDashboard> {
     try {
       await _auth.signOut(); // Logs out from Firebase
       Navigator.pushReplacementNamed(
-          context, 'main_screen'); // Navigates to main screen
+          context, 'mainscreen'); // Navigates to main screen
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Logout Failed: ${e.toString()}')),
