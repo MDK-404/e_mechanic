@@ -38,7 +38,7 @@ class ProductDetailScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.store),
             onPressed: () {
-              Navigator.pushNamed(context, 'shop_details');
+              Navigator.pushNamed(context, 'product_list');
             },
           ),
         ],
@@ -66,7 +66,7 @@ class ProductDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8.0),
             Text(
-              '\$${product.price.toStringAsFixed(2)}',
+              'PKR ${product.price.toStringAsFixed(2)}',
               style: const TextStyle(
                 fontSize: 20.0,
                 color: Colors.orange,

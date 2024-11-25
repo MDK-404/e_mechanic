@@ -99,7 +99,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
 
     final productName = productNameController.text;
-    final productPrice = productPriceController.text;
+    final productPrice = double.tryParse(productPriceController.text) ?? 0.0;
     final description = descriptionController.text;
     final stockAvailable = int.tryParse(stockController.text) ?? 0;
 

@@ -6,16 +6,16 @@ class ProductService {
 
   Future<List<Product>> fetchProducts() async {
     try {
-      QuerySnapshot snapshot = await _firestore
-          .collection('products')
-          .get(); // Update collection name
+      QuerySnapshot snapshot = await _firestore.collection('products').get();
       return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
         return Product(
           id: doc.id,
           name: data['name'] ?? '',
           description: data['description'] ?? '',
-          price: data['price']?.toDouble() ?? 0.0,
+          price: (data['price'] is String)
+              ? double.tryParse(data['price']) ?? 0.0
+              : (data['price'] as num).toDouble(),
           imageUrl: data['imageUrl'] ?? '',
         );
       }).toList();
