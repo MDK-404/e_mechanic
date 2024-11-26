@@ -4,6 +4,8 @@ class Product {
   final String description;
   final double price;
   final String imageUrl;
+  final String shopName;
+  final String shopId;
 
   Product({
     required this.id,
@@ -11,5 +13,7 @@ class Product {
     required this.description,
     required this.price,
     required this.imageUrl,
+    required this.shopName,
+    required this.shopId,
   });
 }

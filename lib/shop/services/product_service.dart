@@ -11,12 +11,14 @@ class ProductService {
         final data = doc.data() as Map<String, dynamic>;
         return Product(
           id: doc.id,
-          name: data['name'] ?? '',
+          name: data['productName'] ?? '',
           description: data['description'] ?? '',
           price: (data['price'] is String)
               ? double.tryParse(data['price']) ?? 0.0
               : (data['price'] as num).toDouble(),
-          imageUrl: data['imageUrl'] ?? '',
+          imageUrl: data['image'] ?? '',
+          shopName: data['shopName'],
+          shopId: data['userId'],
         );
       }).toList();
     } catch (e) {

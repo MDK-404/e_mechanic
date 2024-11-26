@@ -13,20 +13,23 @@ class ProductDetailScreen extends StatelessWidget {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
-    final cartCollection = FirebaseFirestore.instance
-        .collection('cart')
-        .doc(uid)
-        .collection('items');
+    final cartCollection = FirebaseFirestore.instance.collection('cart');
+    try {
+      // Add product to the cart with mechanic's UID as shopId
+      await cartCollection.doc().set({
+        'productId': product.id,
+        'name': product.name,
+        'price': product.price,
+        'imageUrl': product.imageUrl,
+        'shopName': product.shopName, // Ensure fallback
+        'shopId': product.shopId, // Mechanic's UID
+        'userId': uid, // Current user's ID
+      });
 
-    await cartCollection.doc(product.id).set({
-      'productId': product.id,
-      'name': product.name,
-      'price': product.price,
-      'imageUrl': product.imageUrl,
-      'shopName': 'Sample Shop', // Replace dynamically if available
-      'shopId': 'SampleShopID', // Replace dynamically if available
-      'userId': uid, // Ensure we store the user's UID
-    });
+      print('Product added to cart successfully!');
+    } catch (e) {
+      print('Error adding product to cart: $e');
+    }
   }
 
   @override

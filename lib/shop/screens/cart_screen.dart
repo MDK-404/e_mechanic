@@ -12,10 +12,8 @@ class _CartScreenState extends State<CartScreen> {
   final uid = FirebaseAuth.instance.currentUser?.uid;
 
   Future<void> removeFromCart(String productId) async {
-    final cartCollection = FirebaseFirestore.instance
-        .collection('cart')
-        .doc(uid)
-        .collection('items');
+    final cartCollection = FirebaseFirestore.instance.collection('cart');
+
     await cartCollection.doc(productId).delete();
   }
 
@@ -34,10 +32,7 @@ class _CartScreenState extends State<CartScreen> {
       return const Center(child: Text('You are not logged in.'));
     }
 
-    final cartCollection = FirebaseFirestore.instance
-        .collection('cart')
-        .doc(uid)
-        .collection('items');
+    final cartCollection = FirebaseFirestore.instance.collection('cart');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Your Cart')),
