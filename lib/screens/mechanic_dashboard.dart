@@ -1,9 +1,13 @@
+import 'package:e_mechanic/screens/mechanics_chats_displayscreen.dart';
+import 'package:e_mechanic/shop/screens/mechanic_chatscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:e_mechanic/screens/mechanic_navbar.dart';
+import 'package:e_mechanic/shop/models/customer_model.dart';
 
 class MechanicDashboard extends StatefulWidget {
-  const MechanicDashboard({Key? key}) : super(key: key);
+  final Customer? customer;
+  const MechanicDashboard({Key? key, this.customer}) : super(key: key);
 
   @override
   _MechanicDashboardState createState() => _MechanicDashboardState();
@@ -64,6 +68,11 @@ class _MechanicDashboardState extends State<MechanicDashboard> {
           } else if (index == 1) {
             Navigator.pushNamed(context, 'addproducts');
           } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MechanicChatListScreen()),
+            );
+          } else if (index == 3) {
             Navigator.pushNamed(context, 'mechanic_profile');
           }
         },

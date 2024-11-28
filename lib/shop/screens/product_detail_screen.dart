@@ -1,3 +1,4 @@
+import 'package:e_mechanic/shop/screens/customer_chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,8 +29,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         'name': product.name,
         'price': product.price,
         'imageUrl': product.imageUrl,
-        'shopName': product.shopName,
-        'shopId': product.shopId,
+        'shopName': product.shopName, // mechanics shop name
+        'shopId': product.shopId, // mechanics id/mechanics shop id
         'userId': uid,
       });
 
@@ -177,6 +178,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ElevatedButton(
           onPressed: submitReview,
           child: const Text('Submit Review'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            side: const BorderSide(
+              color: Color.fromRGBO(255, 152, 0, 1),
+            ),
+          ),
         ),
       ],
     );
@@ -268,8 +276,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 IconButton(
                   icon: const Icon(Icons.chat),
                   onPressed: () {
-                    Navigator.pushNamed(context, 'chat_screen',
-                        arguments: widget.product.shopId);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CustomerChatScreen(
+                          mechanicId: widget.product.shopId, //  mechanic ID
+                          shopName: widget.product.shopName, // shop name
+                          mechanicImageUrl:
+                              widget.product.imageUrl, //  mechanic's image URL
+                        ),
+                      ),
+                    );
                   },
                 ),
               ],

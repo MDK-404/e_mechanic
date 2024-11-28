@@ -5,7 +5,7 @@ class Product {
   final double price;
   final String imageUrl;
   final String shopName;
-  final String shopId;
+  final String shopId; // mechanic id
 
   Product({
     required this.id,

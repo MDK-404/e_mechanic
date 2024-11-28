@@ -29,6 +29,10 @@ class MechanicBottomNavigationBar extends StatelessWidget {
           label: 'Add Products',
         ),
         BottomNavigationBarItem(
+          icon: Icon(Icons.chat),
+          label: 'Chats',
+        ),
+        BottomNavigationBarItem(
           icon: Icon(Icons.person),
           label: 'Profile',
         ),
