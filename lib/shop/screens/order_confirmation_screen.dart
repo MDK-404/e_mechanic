@@ -24,6 +24,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
 
   late int totalPrice;
   late int maxStock;
+  bool isPlacingOrder = false; // Flag to track order placement status
 
   @override
   void initState() {
@@ -87,6 +88,10 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   }
 
   Future<void> placeOrder(BuildContext context) async {
+    setState(() {
+      isPlacingOrder = true; // Show loader
+    });
+
     final uid = FirebaseAuth.instance.currentUser?.uid;
     final userName = nameController.text.isNotEmpty
         ? nameController.text
@@ -96,6 +101,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
     if (nameController.text.trim().isEmpty ||
         phoneController.text.trim().isEmpty ||
         addressController.text.trim().isEmpty) {
+      setState(() {
+        isPlacingOrder = false; // Hide loader
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -145,6 +153,10 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
       final cartDoc = cartSnapshot.docs.first;
       await _firestore.collection('cart').doc(cartDoc.id).delete();
     }
+
+    setState(() {
+      isPlacingOrder = false; // Hide loader
+    });
 
     showDialog(
       context: context,
@@ -352,11 +364,15 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
 
             const SizedBox(height: 16.0),
 
-            // Order Button
+            // Order Button with Loader
             Center(
               child: ElevatedButton(
-                onPressed: () => placeOrder(context),
-                child: Text('Place Order', style: GoogleFonts.poppins()),
+                onPressed: isPlacingOrder ? null : () => placeOrder(context),
+                child: isPlacingOrder
+                    ? CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : Text('Place Order', style: GoogleFonts.poppins()),
               ),
             ),
           ],
