@@ -17,6 +17,9 @@ class ServicesScreen extends StatelessWidget {
           } else if (index == 1) {
             Navigator.pushReplacementNamed(context, 'services');
           } else if (index == 2) {
+            Navigator.pushReplacementNamed(
+                context, 'customer_chat_list_screen');
+          } else if (index == 3) {
             Navigator.pushReplacementNamed(context, 'customer_profile');
           }
         },

@@ -21,18 +21,35 @@ class _CustomerChatScreenState extends State<CustomerChatScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _messageController = TextEditingController();
+
   late String customerId;
-  late String customerName;
-  late String customerProfileImage;
+  String customerName = 'Unknown';
+  String customerProfileImage = '';
+
   @override
   void initState() {
     super.initState();
     User? user = _auth.currentUser;
     if (user != null) {
       customerId = user.uid;
-      customerName =
-          user.displayName ?? 'Unknown'; // Get customer name from Firebase Auth
-      customerProfileImage = user.photoURL ?? '';
+      _fetchCustomerData();
+    }
+  }
+
+  Future<void> _fetchCustomerData() async {
+    try {
+      final customerDoc =
+          await _firestore.collection('customers').doc(customerId).get();
+      if (customerDoc.exists) {
+        final customerData = customerDoc.data();
+        setState(() {
+          customerName = customerData?['name'] ?? 'Unknown';
+          customerProfileImage = customerData?['profileImageURL'] ??
+              'https://via.placeholder.com/50';
+        });
+      }
+    } catch (e) {
+      print('Error fetching customer data: $e');
     }
   }
 
@@ -46,8 +63,9 @@ class _CustomerChatScreenState extends State<CustomerChatScreen> {
         'customerId': customerId,
         'mechanicname': widget.shopName,
         'mechanicprofileurl': widget.mechanicImageUrl,
-        'customerName': customerName,
-        'customerProfileImage': customerProfileImage,
+        'customerName': customerName, // Customer name from Firestore
+        'customerProfileImage':
+            customerProfileImage, // Profile image from Firestore
         'message': _messageController.text,
         'timestamp': FieldValue.serverTimestamp(),
         'senderType': 'customer',

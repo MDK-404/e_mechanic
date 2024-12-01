@@ -106,19 +106,25 @@ class _AddProductScreenState extends State<AddProductScreen> {
     try {
       final String imageUrl = _image != null ? await uploadImage(_image!) : '';
 
+      final CollectionReference productsRef =
+          FirebaseFirestore.instance.collection('products');
+
+      // Create a new document to get its ID
+      final DocumentReference newProductRef = productsRef.doc();
+
       final productData = {
+        'productId': newProductRef.id, // Use the document ID as productId
         'productName': productName,
         'description': description,
         'price': productPrice,
         'stockAvailable': stockAvailable,
         'image': imageUrl,
-        'shopName': shopName, // Include shop name with product
+        'shopName': shopName,
+        'userId': _user!.uid, // Add user ID
       };
 
-      await FirebaseFirestore.instance.collection('products').add({
-        ...productData, // Existing product data
-        'userId': _user!.uid, // Add user ID
-      });
+      // Save the product to Firestore
+      await newProductRef.set(productData);
 
       // Clear text controllers and images list after saving
       productNameController.clear();

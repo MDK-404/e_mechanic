@@ -35,7 +35,13 @@ class _MechanicChatListScreenState extends State<MechanicChatListScreen> {
         String customerId = chat['customerId'];
 
         if (!groupedChats.containsKey(customerId)) {
-          groupedChats[customerId] = chat;
+          groupedChats[customerId] = {
+            'customerId': customerId,
+            'customerName': chat['customerName'],
+            'customerProfileImage': chat['customerProfileImage'],
+            'latestMessage': chat['message'],
+            'timestamp': chat['timestamp'],
+          };
         } else {
           var currentMessageTime =
               (chat['timestamp'] as Timestamp?)?.toDate() ??
@@ -59,8 +65,8 @@ class _MechanicChatListScreenState extends State<MechanicChatListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Customer Chats"),
-        backgroundColor: Colors.blue,
+        title: Text("Chats"),
+        backgroundColor: Colors.orangeAccent,
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: getChatList(),
@@ -87,33 +93,76 @@ class _MechanicChatListScreenState extends State<MechanicChatListScreen> {
             itemBuilder: (context, index) {
               var chat = chatList[index];
               return ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                 leading: CircleAvatar(
+                  radius: 30,
                   backgroundImage: chat['customerProfileImage'] != null
                       ? NetworkImage(chat['customerProfileImage'])
                       : null,
                   child: chat['customerProfileImage'] == null
-                      ? Icon(Icons.person)
+                      ? Icon(Icons.person, size: 30)
                       : null,
                 ),
                 title: Text(
-                  chat['customerName'] ?? 'Unknown',
+                  chat['customerName'] ?? 'Unknown Name',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                subtitle: Text(
-                  chat['message'] ?? '',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 5),
+                    Text(
+                      chat['latestMessage'] ?? '',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Text(
+                          chat['timestamp'] != null &&
+                                  chat['timestamp'] is Timestamp
+                              ? (chat['timestamp'] as Timestamp)
+                                  .toDate()
+                                  .toLocal()
+                                  .toString()
+                                  .split(' ')[0]
+                              : "No Date",
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          chat['timestamp'] != null &&
+                                  chat['timestamp'] is Timestamp
+                              ? (chat['timestamp'] as Timestamp)
+                                  .toDate()
+                                  .toLocal()
+                                  .toString()
+                                  .split(' ')[1]
+                                  .substring(0, 5)
+                              : "00:00",
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                trailing: Text(
-                  chat['timestamp'] != null
-                      ? (chat['timestamp'] as Timestamp)
-                          .toDate()
-                          .toLocal()
-                          .toString()
-                          .split(' ')[0]
-                      : '',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                trailing: IconButton(
+                  icon: Icon(Icons.message, size: 30, color: Colors.orange),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MechanicChatScreen(
+                          customerId: chat['customerId'],
+                          customerName: chat['customerName'] ?? 'Unknown',
+                          customerImageUrl: chat['customerProfileImage'] ?? '',
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 onTap: () {
                   Navigator.push(
@@ -135,7 +184,7 @@ class _MechanicChatListScreenState extends State<MechanicChatListScreen> {
       bottomNavigationBar: MechanicBottomNavigationBar(
         onTap: (index) {
           if (index == 0) {
-            Navigator.pushReplacementNamed(context, 'mechanicdashboard');
+            Navigator.pushReplacementNamed(context, 'mechanic_dashboard');
           } else if (index == 1) {
             Navigator.pushReplacementNamed(context, 'addproducts');
           } else if (index == 2) {

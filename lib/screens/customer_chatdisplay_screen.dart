@@ -38,8 +38,8 @@ class _CustomerChatListScreenState extends State<CustomerChatListScreen> {
         if (!groupedChats.containsKey(mechanicId)) {
           groupedChats[mechanicId] = {
             'mechanicId': mechanicId,
-            'mechanicname': chat['mechanicname'],
-            'mechanicprofileurl': chat['mechanicprofileurl'],
+            'mechanicName': chat['mechanicName'],
+            'mechanicProfileImage': chat['mechanicProfileImage'],
             'latestMessage': chat['message'], // Include the latest message
             'timestamp': chat['timestamp'], // Include timestamp
           };
@@ -108,15 +108,15 @@ class _CustomerChatListScreenState extends State<CustomerChatListScreen> {
                     EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                 leading: CircleAvatar(
                   radius: 30,
-                  backgroundImage: chat['mechanicprofileurl'] != null
-                      ? NetworkImage(chat['mechanicprofileurl'])
+                  backgroundImage: chat['mechanicProfileImage'] != null
+                      ? NetworkImage(chat['mechanicProfileImage'])
                       : null,
-                  child: chat['mechanicprofileurl'] == null
+                  child: chat['mechanicProfileImage'] == null
                       ? Icon(Icons.person, size: 30)
                       : null,
                 ),
                 title: Text(
-                  chat['mechanicname'] ?? 'Unknown Name',
+                  chat['mechanicName'] ?? 'Unknown Name',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 subtitle: Column(
@@ -169,8 +169,8 @@ class _CustomerChatListScreenState extends State<CustomerChatListScreen> {
                       MaterialPageRoute(
                         builder: (context) => CustomerChatScreen(
                           mechanicId: chat['mechanicId'],
-                          shopName: chat['mechanicname'] ?? 'Unknown',
-                          mechanicImageUrl: chat['mechanicprofileurl'] ?? '',
+                          shopName: chat['mechanicName'] ?? 'Unknown',
+                          mechanicImageUrl: chat['mechanicProfileImage'] ?? '',
                         ),
                       ),
                     );
@@ -182,8 +182,8 @@ class _CustomerChatListScreenState extends State<CustomerChatListScreen> {
                     MaterialPageRoute(
                       builder: (context) => CustomerChatScreen(
                         mechanicId: chat['mechanicId'],
-                        shopName: chat['mechanicname'] ?? 'Unknown',
-                        mechanicImageUrl: chat['mechanicprofileurl'] ?? '',
+                        shopName: chat['mechanicName'] ?? 'Unknown',
+                        mechanicImageUrl: chat['mechanicProfileImage'] ?? '',
                       ),
                     ),
                   );

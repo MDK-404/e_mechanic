@@ -19,6 +19,11 @@ class ProductService {
           imageUrl: data['image'] ?? '',
           shopName: data['shopName'],
           shopId: data['userId'],
+          stockAvailable: (data['stockAvailable'] is int)
+              ? data['stockAvailable'] as int
+              : (data['stockAvailable'] is String)
+                  ? int.tryParse(data['stockAvailable']) ?? 0
+                  : 0, // Safely handle stockAvailable
         );
       }).toList();
     } catch (e) {

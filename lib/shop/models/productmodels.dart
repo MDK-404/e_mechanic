@@ -6,7 +6,7 @@ class Product {
   final String imageUrl;
   final String shopName;
   final String shopId; // mechanic id
-
+  final int stockAvailable;
   Product({
     required this.id,
     required this.name,
@@ -15,5 +15,6 @@ class Product {
     required this.imageUrl,
     required this.shopName,
     required this.shopId,
+    required this.stockAvailable,
   });
 }

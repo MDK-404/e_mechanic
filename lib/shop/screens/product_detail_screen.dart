@@ -32,6 +32,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         'shopName': product.shopName, // mechanics shop name
         'shopId': product.shopId, // mechanics id/mechanics shop id
         'userId': uid,
+        'stockAvailable': product.stockAvailable,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(

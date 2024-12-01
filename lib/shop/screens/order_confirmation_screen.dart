@@ -1,17 +1,90 @@
 import 'dart:math';
+import 'package:e_mechanic/shop/models/productmodels.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class OrderConfirmationScreen extends StatelessWidget {
+class OrderConfirmationScreen extends StatefulWidget {
   final Map<String, dynamic> product;
 
   OrderConfirmationScreen({required this.product});
 
+  @override
+  _OrderConfirmationScreenState createState() =>
+      _OrderConfirmationScreenState();
+}
+
+class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController addressController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController quantityController = TextEditingController();
+
+  late int totalPrice;
+  late int maxStock;
+
+  @override
+  void initState() {
+    super.initState();
+    quantityController.text = '1'; // Default quantity
+    maxStock = widget.product['stockAvailable'] ?? 0;
+    totalPrice =
+        ((widget.product['price'] * int.parse(quantityController.text)) + 100)
+            .toInt(); // Calculate initial total price
+  }
+
+  void updateQuantity(int newQuantity) {
+    if (newQuantity > maxStock) {
+      quantityController.text = maxStock.toString();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'You cannot order more than the available stock (${maxStock}).',
+            style: GoogleFonts.poppins(),
+          ),
+        ),
+      );
+    } else if (newQuantity < 1) {
+      quantityController.text = '1';
+    } else {
+      quantityController.text = newQuantity.toString();
+    }
+    updateTotalPrice();
+  }
+
+  void updateTotalPrice() {
+    setState(() {
+      totalPrice =
+          ((widget.product['price'] * int.tryParse(quantityController.text)!) +
+                  100)
+              .toInt();
+    });
+  }
+
+  // Update product stock
+  Future<void> updateProductStock(int quantity) async {
+    try {
+      await _firestore
+          .collection(
+              'products') // Replace with your actual product collection name
+          .doc(widget.product[
+              'productId']) // Replace with the product document ID field
+          .update({
+        'stockAvailable': FieldValue.increment(-quantity),
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to update stock. Please try again.',
+            style: GoogleFonts.poppins(),
+          ),
+        ),
+      );
+    }
+  }
 
   Future<void> placeOrder(BuildContext context) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -19,25 +92,59 @@ class OrderConfirmationScreen extends StatelessWidget {
         ? nameController.text
         : FirebaseAuth.instance.currentUser?.displayName ?? 'Customer';
 
+    // Check for empty fields
+    if (nameController.text.trim().isEmpty ||
+        phoneController.text.trim().isEmpty ||
+        addressController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Please fill in all the required fields (Name, Phone, and Address).',
+            style: GoogleFonts.poppins(),
+          ),
+        ),
+      );
+      return;
+    }
+
     if (uid == null) return;
 
     final orderNumber = Random().nextInt(1000000);
-    final totalPrice = product['price'] + 100; // Adding shipping cost.
+    final quantity = int.tryParse(quantityController.text) ?? 0;
 
-    await FirebaseFirestore.instance.collection('orders').add({
+    // Add order to Firestore
+    await _firestore.collection('orders').add({
       'orderNumber': orderNumber,
       'customerId': uid,
       'customerName': userName,
       'customerAddress': addressController.text,
       'customerPhone': phoneController.text,
-      'productName': product['name'],
-      'productPrice': product['price'],
+      'productName': widget.product['name'],
+      'productId': widget.product['productId'],
+      'productPrice': widget.product['price'],
+      'quantity': quantity,
       'shippingCost': 100,
       'totalPrice': totalPrice,
-      'shopName': product['shopName'],
-      'shopId': product['shopId'],
+      'shopName': widget.product['shopName'],
+      'shopId': widget.product['shopId'],
       'status': 'Pending',
     });
+
+    // Update product stock
+    await updateProductStock(quantity);
+
+    // Remove item from cart
+    final cartSnapshot = await _firestore
+        .collection('cart')
+        .where('userId', isEqualTo: uid)
+        .where('name', isEqualTo: widget.product['name'])
+        .limit(1)
+        .get();
+
+    if (cartSnapshot.docs.isNotEmpty) {
+      final cartDoc = cartSnapshot.docs.first;
+      await _firestore.collection('cart').doc(cartDoc.id).delete();
+    }
 
     showDialog(
       context: context,
@@ -45,12 +152,14 @@ class OrderConfirmationScreen extends StatelessWidget {
         title: Text('Order Confirmed!', style: GoogleFonts.poppins()),
         content: Text(
           'Your order #$orderNumber has been placed successfully. It will be delivered in 2-3 days.\n\n'
-          'Total: ₹$totalPrice',
+          'Total: PKR $totalPrice',
           style: GoogleFonts.poppins(),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pushNamed(context, 'product_list');
+            },
             child: Text('OK', style: GoogleFonts.poppins()),
           ),
         ],
@@ -60,8 +169,6 @@ class OrderConfirmationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalPrice = product['price'] + 100;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Confirm Order'),
@@ -83,7 +190,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Image.network(
-                      product['imageUrl'],
+                      widget.product['imageUrl'],
                       width: 80,
                       height: 80,
                       fit: BoxFit.cover,
@@ -94,7 +201,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            product['name'],
+                            widget.product['name'],
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -102,14 +209,14 @@ class OrderConfirmationScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8.0),
                           Text(
-                            'PKR ${product['price']}',
+                            'PKR ${widget.product['price']}',
                             style: GoogleFonts.poppins(
                               fontSize: 14,
                               color: Colors.green,
                             ),
                           ),
                           Text(
-                            'From: ${product['shopName']}',
+                            'From: ${widget.product['shopName']}',
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               color: Colors.grey,
@@ -124,6 +231,58 @@ class OrderConfirmationScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16.0),
 
+            // Quantity Selector
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Quantity',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.remove),
+                      onPressed: () {
+                        int currentQuantity =
+                            int.parse(quantityController.text);
+                        updateQuantity(currentQuantity - 1);
+                      },
+                    ),
+                    SizedBox(
+                      width: 50,
+                      child: TextField(
+                        controller: quantityController,
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (value) {
+                          int? newQuantity = int.tryParse(value);
+                          if (newQuantity != null) {
+                            updateQuantity(newQuantity);
+                          }
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        int currentQuantity =
+                            int.parse(quantityController.text);
+                        updateQuantity(currentQuantity + 1);
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16.0),
             // Input Fields
             TextField(
               controller: nameController,
@@ -152,12 +311,12 @@ class OrderConfirmationScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16.0),
-
-            // Payment Method
             Text(
               'Payment Method',
               style: GoogleFonts.poppins(
-                  fontSize: 16, fontWeight: FontWeight.bold),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8.0),
             RadioListTile(
@@ -178,29 +337,26 @@ class OrderConfirmationScreen extends StatelessWidget {
               ),
             ),
 
-            // Price Summary
             const SizedBox(height: 16.0),
+            // Price Summary
             Text(
               'Shipping Cost: PKR 100',
               style: GoogleFonts.poppins(fontSize: 14),
             ),
+            const SizedBox(height: 8.0),
             Text(
               'Total: PKR $totalPrice',
               style: GoogleFonts.poppins(
                   fontSize: 16, fontWeight: FontWeight.bold),
             ),
 
-            const SizedBox(height: 24.0),
+            const SizedBox(height: 16.0),
 
-            // Confirm Button
-            SizedBox(
-              width: double.infinity,
+            // Order Button
+            Center(
               child: ElevatedButton(
                 onPressed: () => placeOrder(context),
-                child: Text(
-                  'Confirm Order',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                ),
+                child: Text('Place Order', style: GoogleFonts.poppins()),
               ),
             ),
           ],

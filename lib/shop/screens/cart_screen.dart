@@ -17,11 +17,28 @@ class _CartScreenState extends State<CartScreen> {
     await cartCollection.doc(productId).delete();
   }
 
-  void navigateToOrderConfirmation(Map<String, dynamic> product) {
+  void navigateToOrderConfirmation(DocumentSnapshot cartItem) {
+    final data = cartItem.data() as Map<String, dynamic>;
+
+    if (data['stockAvailable'] == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Product stock information is missing.'),
+        ),
+      );
+      return;
+    }
+
+    // Add `doc.id` to the product map
+    final productWithId = {
+      ...data,
+      'productId': data['productId'] // Include the Firestore document ID
+    };
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => OrderConfirmationScreen(product: product),
+        builder: (context) => OrderConfirmationScreen(product: productWithId),
       ),
     );
   }
@@ -61,12 +78,12 @@ class _CartScreenState extends State<CartScreen> {
                   leading:
                       Image.network(data['imageUrl'], width: 50, height: 50),
                   title: Text(data['name']),
-                  subtitle: Text('\$${data['price']}'),
+                  subtitle: Text('PKR ${data['price']}'),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () => removeFromCart(cartItem.id),
                   ),
-                  onTap: () => navigateToOrderConfirmation(data),
+                  onTap: () => navigateToOrderConfirmation(cartItem),
                 ),
               );
             },

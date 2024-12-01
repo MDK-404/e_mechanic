@@ -21,17 +21,37 @@ class _MechanicChatScreenState extends State<MechanicChatScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _messageController = TextEditingController();
+
   late String mechanicId;
-  late String mechanicName;
-  late String mechanicProfileImage;
+  late String mechanicName = '';
+  late String mechanicProfileImage = '';
+
   @override
   void initState() {
     super.initState();
+    _fetchMechanicDetails();
+  }
+
+  Future<void> _fetchMechanicDetails() async {
     User? user = _auth.currentUser;
     if (user != null) {
       mechanicId = user.uid;
-      mechanicName = user.displayName ?? 'unknown name';
-      mechanicProfileImage = user.photoURL ?? '';
+
+      try {
+        DocumentSnapshot mechanicDoc = await _firestore
+            .collection('mechanics') // Adjust collection name if needed
+            .doc(mechanicId)
+            .get();
+
+        if (mechanicDoc.exists) {
+          setState(() {
+            mechanicName = mechanicDoc['shopName'] ?? 'Unknown Mechanic';
+            mechanicProfileImage = mechanicDoc['profileImageUrl'] ?? '';
+          });
+        }
+      } catch (e) {
+        print('Error fetching mechanic details: $e');
+      }
     }
   }
 
@@ -42,8 +62,8 @@ class _MechanicChatScreenState extends State<MechanicChatScreen> {
       await _firestore.collection('chats').add({
         'mechanicId': mechanicId,
         'customerId': widget.customerId,
-        'mechanicname': mechanicName,
-        'mechanicprofileurl': mechanicProfileImage,
+        'mechanicName': mechanicName,
+        'mechanicProfileImage': mechanicProfileImage,
         'customerName': widget.customerName,
         'customerProfileImage': widget.customerImageUrl,
         'message': _messageController.text,
@@ -57,11 +77,54 @@ class _MechanicChatScreenState extends State<MechanicChatScreen> {
     }
   }
 
+  void _confirmDeleteMessage(String messageId, bool isMechanicMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Delete Message"),
+          content: Text("Are you sure you want to delete this message?"),
+          actions: [
+            TextButton(
+              child: Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                if (isMechanicMessage) {
+                  _deleteMessage(messageId);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("You can only delete your messages!"),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteMessage(String messageId) async {
+    try {
+      await _firestore.collection('chats').doc(messageId).delete();
+    } catch (e) {
+      print('Error deleting message: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.orangeAccent,
         title: Row(
           children: [
             CircleAvatar(
@@ -99,20 +162,28 @@ class _MechanicChatScreenState extends State<MechanicChatScreen> {
                     var message =
                         messages[index].data() as Map<String, dynamic>;
                     bool isMechanic = message['senderType'] == 'mechanic';
+                    String messageId = messages[index].id;
                     return Align(
                       alignment: isMechanic
                           ? Alignment.centerRight
                           : Alignment.centerLeft,
-                      child: Container(
-                        padding: EdgeInsets.all(8.0),
-                        margin: EdgeInsets.symmetric(vertical: 4.0),
-                        decoration: BoxDecoration(
-                          color: isMechanic ? Colors.blue : Colors.grey[700],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          message['message'],
-                          style: TextStyle(color: Colors.white),
+                      child: GestureDetector(
+                        onLongPress: () {
+                          _confirmDeleteMessage(messageId, isMechanic);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(8.0),
+                          margin: EdgeInsets.symmetric(vertical: 4.0),
+                          decoration: BoxDecoration(
+                            color: isMechanic
+                                ? Colors.orangeAccent
+                                : Colors.grey[700],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            message['message'],
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     );
@@ -135,7 +206,7 @@ class _MechanicChatScreenState extends State<MechanicChatScreen> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: Colors.blue),
+                  icon: Icon(Icons.send, color: Colors.orangeAccent),
                   onPressed: _sendMessage,
                 ),
               ],
