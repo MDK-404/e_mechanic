@@ -107,6 +107,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           final productName = order['productName'];
                           final price = order['productPrice'];
                           final quantity = order['quantity'];
+                          final productImage = order['image'];
 
                           return FutureBuilder<Customer?>(
                             future: fetchCustomer(customerId),
@@ -139,7 +140,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       children: [
                                         CircleAvatar(
                                           backgroundImage:
-                                              NetworkImage(profileImage),
+                                              NetworkImage(productImage),
                                           radius: 35,
                                         ),
                                         SizedBox(width: 12),
