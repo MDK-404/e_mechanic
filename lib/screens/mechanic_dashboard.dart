@@ -1,4 +1,5 @@
 import 'package:e_mechanic/screens/mechanic_navbar.dart';
+import 'package:e_mechanic/screens/mechanic_products_sceen.dart';
 import 'package:e_mechanic/screens/mechanics_chats_displayscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,6 +26,19 @@ class _MechanicDashboardState extends State<MechanicDashboard> {
     super.initState();
     _fetchMechanicInfo();
     _fetchCounts();
+  }
+
+  // Function to log out the user
+  Future<void> _logout() async {
+    try {
+      await _auth.signOut(); // Logs out from Firebase
+      Navigator.pushReplacementNamed(
+          context, 'mainscreen'); // Navigates to main screen
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Logout Failed: ${e.toString()}')),
+      );
+    }
   }
 
   Future<void> _fetchMechanicInfo() async {
@@ -67,10 +81,11 @@ class _MechanicDashboardState extends State<MechanicDashboard> {
       final ordersSnapshot = await _firestore
           .collection('orders')
           .where('shopId', isEqualTo: user.uid)
+          .where('status', isEqualTo: 'Pending')
           .get();
       final bookingsSnapshot = await _firestore
           .collection('bookings')
-          .where('shop', isEqualTo: user.uid)
+          .where('mechanicId', isEqualTo: user.uid)
           .get();
       final emergencySnapshot = await _firestore
           .collection('emergencyRequests')
@@ -91,6 +106,36 @@ class _MechanicDashboardState extends State<MechanicDashboard> {
       appBar: AppBar(
         title: const Text('Dashboard'),
         centerTitle: true,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+              ),
+              child: const Text(
+                'Menu',
+                style: TextStyle(color: Colors.white, fontSize: 24),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.shopping_cart),
+              title: const Text('Your Products'),
+              onTap: () {
+                Navigator.pushReplacementNamed(context, 'mechanic_products');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () {
+                _logout(); // Call the logout function
+              },
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -137,7 +182,7 @@ class _MechanicDashboardState extends State<MechanicDashboard> {
                   // Orders Card
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, 'orders_screen');
+                      Navigator.pushNamed(context, 'order_screen');
                     },
                     child: DashboardCard(
                       title: 'Orders',

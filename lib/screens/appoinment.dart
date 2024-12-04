@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_mechanic/screens/navbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
@@ -27,6 +28,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   String? city;
   List<String> area = [];
   Map<String, dynamic> shopAvailability = {};
+  Map<String, String> tempMechanicUids = {};
 
   @override
   void initState() {
@@ -44,6 +46,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       Map<String, dynamic> tempAvailability = {};
       snapshot.docs.forEach((doc) {
         var data = doc.data() as Map<String, dynamic>;
+        String mechanicUid = doc.id;
         if (data['shopName'] != null) {
           tempShopTypes.add(data['shopName']);
           tempAvailability[data['shopName']] = data['availability'];
@@ -72,43 +75,106 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     if (_selectedCity.isEmpty ||
         selectedShopType == null ||
         _selectedServices.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in all the required fields.')),
+      // Show dialog for missing fields
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Missing Fields'),
+          content: Text('Please fill in all the required fields.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        ),
       );
       return;
     }
 
-    // Save the booking details in Firestore
-    final bookingData = {
-      'city': _selectedCity,
-      'shop': selectedShopType,
-      'date': _selectedDate,
-      'services': _selectedServices,
-      'status': 'pending',
-    };
+    try {
+      // Get current user details
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('customers')
+          .doc(userId)
+          .get();
 
-    await _firestore.collection('bookings').add(bookingData);
+      // Fetch userName from customers collection
+      String userName = userDoc['name'];
 
-    // Show confirmation dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
+      // Fetch first matching mechanic ID
+      QuerySnapshot mechanicSnapshot = await FirebaseFirestore.instance
+          .collection('mechanics')
+          .where('shopName', isEqualTo: selectedShopType)
+          .get();
+
+      if (mechanicSnapshot.docs.isEmpty) {
+        // Show error dialog if no mechanic found
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Mechanic Not Found'),
+            content: Text('No mechanic found for the selected shop.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
+      // Use the first mechanic's ID
+      String mechanicId = mechanicSnapshot.docs.first.id;
+
+      // Prepare booking data
+      final bookingData = {
+        'userId': userId,
+        'userName': userName,
+        'mechanicId': mechanicId,
+        'city': _selectedCity,
+        'shop': selectedShopType,
+        'date': _selectedDate,
+        'services': _selectedServices,
+        'status': 'pending',
+      };
+
+      // Save booking data in Firestore
+      await FirebaseFirestore.instance.collection('bookings').add(bookingData);
+
+      // Show success dialog
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
           title: Text('Booking Confirmed'),
-          content: Text(
-              'Your request has been sent and you will get an update after confirmation from the mechanic.'),
+          content: Text('Your booking has been successfully confirmed.'),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.pop(context),
               child: Text('OK'),
             ),
           ],
-        );
-      },
-    );
+        ),
+      );
+    } catch (e) {
+      print('Error confirming booking: $e');
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Failed to confirm booking. Please try again.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -273,6 +339,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           } else if (index == 1) {
             Navigator.pushReplacementNamed(context, 'services');
           } else if (index == 2) {
+            Navigator.pushReplacementNamed(
+                context, 'customer_chat_list_screen');
+          } else if (index == 3) {
             Navigator.pushReplacementNamed(context, 'customer_profile');
           }
         },

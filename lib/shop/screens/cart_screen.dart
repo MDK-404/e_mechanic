@@ -32,7 +32,8 @@ class _CartScreenState extends State<CartScreen> {
     // Add `doc.id` to the product map
     final productWithId = {
       ...data,
-      'productId': data['productId'] // Include the Firestore document ID
+      'productId': data['productId'],
+      'image': data['imageUrl'], // Include the Firestore document ID
     };
 
     Navigator.push(

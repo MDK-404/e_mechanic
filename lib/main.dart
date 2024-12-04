@@ -8,7 +8,9 @@ import 'package:e_mechanic/screens/main_screen.dart';
 import 'package:e_mechanic/screens/mechanic_dashboard.dart';
 import 'package:e_mechanic/screens/mechanic_login.dart';
 import 'package:e_mechanic/screens/mechanic_otp.dart';
+import 'package:e_mechanic/screens/mechanic_products_sceen.dart';
 import 'package:e_mechanic/screens/mechanic_profile.dart';
+import 'package:e_mechanic/screens/orders_screen.dart';
 import 'package:e_mechanic/screens/otp.dart';
 import 'package:e_mechanic/screens/services.dart';
 import 'package:e_mechanic/screens/splash_screen.dart';
@@ -64,6 +66,8 @@ class MyApp extends StatelessWidget {
         'services': (context) => ServicesScreen(),
         'customer_chat_list_screen': (context) => CustomerChatListScreen(),
         'mechanic_dashboard': (context) => MechanicDashboard(),
+        'mechanic_products': (context) => YourProductsScreen(),
+        'order_screen': (context) => OrdersScreen(),
         'cart': (context) => CartScreen(),
         'product_list': (context) => ProductListScreen(),
         'mechanic_otp': (context) => OTPVerification(

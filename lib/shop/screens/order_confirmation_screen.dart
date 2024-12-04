@@ -129,6 +129,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
       'customerPhone': phoneController.text,
       'productName': widget.product['name'],
       'productId': widget.product['productId'],
+      'image': widget.product['image'],
       'productPrice': widget.product['price'],
       'quantity': quantity,
       'shippingCost': 100,
