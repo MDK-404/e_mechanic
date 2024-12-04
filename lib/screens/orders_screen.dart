@@ -129,6 +129,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Card(
+                                  color: Colors.orangeAccent,
                                   margin: EdgeInsets.symmetric(vertical: 8.0),
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
@@ -156,10 +157,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                               ),
                                               SizedBox(height: 8),
                                               Text(
-                                                'Customer: $customerName\nPrice: \$${price}\nQuantity: $quantity',
+                                                'Customer: $customerName\nPrice: PKR ${price}\nQuantity: $quantity',
                                                 style: TextStyle(
                                                     fontSize: 14,
-                                                    color: Colors.grey[600]),
+                                                    color: Colors.black),
                                               ),
                                             ],
                                           ),

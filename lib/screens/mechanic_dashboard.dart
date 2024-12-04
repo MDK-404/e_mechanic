@@ -232,10 +232,7 @@ class _MechanicDashboardState extends State<MechanicDashboard> {
           } else if (index == 1) {
             Navigator.pushNamed(context, 'addproducts');
           } else if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MechanicChatListScreen()),
-            );
+            Navigator.pushNamed(context, 'mechanic_chat_list_screen');
           } else if (index == 3) {
             Navigator.pushNamed(context, 'mechanic_profile');
           }

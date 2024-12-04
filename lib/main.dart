@@ -5,16 +5,19 @@ import 'package:e_mechanic/screens/customer_home.dart';
 import 'package:e_mechanic/screens/customer_login.dart';
 import 'package:e_mechanic/screens/customer_profile.dart';
 import 'package:e_mechanic/screens/main_screen.dart';
+import 'package:e_mechanic/screens/mechanic_booking_screen.dart';
 import 'package:e_mechanic/screens/mechanic_dashboard.dart';
 import 'package:e_mechanic/screens/mechanic_login.dart';
 import 'package:e_mechanic/screens/mechanic_otp.dart';
 import 'package:e_mechanic/screens/mechanic_products_sceen.dart';
 import 'package:e_mechanic/screens/mechanic_profile.dart';
+import 'package:e_mechanic/screens/mechanics_chats_displayscreen.dart';
 import 'package:e_mechanic/screens/orders_screen.dart';
 import 'package:e_mechanic/screens/otp.dart';
 import 'package:e_mechanic/screens/services.dart';
 import 'package:e_mechanic/screens/splash_screen.dart';
 import 'package:e_mechanic/shop/screens/cart_screen.dart';
+import 'package:e_mechanic/shop/screens/mechanic_chatscreen.dart';
 import 'package:e_mechanic/shop/screens/product_detail_screen.dart';
 import 'package:e_mechanic/shop/screens/product_list_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -42,17 +45,6 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const SplashScreen(),
-      // Dynamic route handling for MechanicDashboard
-      // onGenerateRoute: (settings) {
-      //   if (settings.name == 'mechanic_dashboard') {
-      //     final customer = settings.arguments
-      //         as Customer; // Pass Customer object as an argument
-      //     return MaterialPageRoute(
-      //       builder: (context) => MechanicDashboard(customer: customer),
-      //     );
-      //   }
-      //   return null; // Default fallback if route doesn't match
-      // },
       routes: {
         'splash': (context) => const SplashScreen(),
         'mainscreen': (context) => MainScreen(),
@@ -65,8 +57,10 @@ class MyApp extends StatelessWidget {
         'appoitnment': (context) => AppointmentScreen(),
         'services': (context) => ServicesScreen(),
         'customer_chat_list_screen': (context) => CustomerChatListScreen(),
+        'mechanic_chat_list_screen': (context) => MechanicChatListScreen(),
         'mechanic_dashboard': (context) => MechanicDashboard(),
         'mechanic_products': (context) => YourProductsScreen(),
+        'bookings_screen': (context) => BookingsScreen(),
         'order_screen': (context) => OrdersScreen(),
         'cart': (context) => CartScreen(),
         'product_list': (context) => ProductListScreen(),

@@ -33,7 +33,7 @@ class _CartScreenState extends State<CartScreen> {
     final productWithId = {
       ...data,
       'productId': data['productId'],
-      'image': data['imageUrl'], // Include the Firestore document ID
+      'imageUrl': data['imageUrl'],
     };
 
     Navigator.push(

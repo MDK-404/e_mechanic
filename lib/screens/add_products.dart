@@ -272,6 +272,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
           } else if (index == 1) {
             Navigator.pushNamed(context, 'addproducts');
           } else if (index == 2) {
+            Navigator.pushNamed(context, 'mechanic_chat_list_screen');
+          } else if (index == 3) {
             Navigator.pushNamed(context, 'mechanic_profile');
           }
         },
