@@ -53,6 +53,8 @@ dependencies:
   firebase_messaging: ^14.9.4
   google_fonts: ^6.2.1
   intl: ^0.20.0
+  http: ^1.2.2
+  geocoding: ^3.0.0
    
 
 dev_dependencies:

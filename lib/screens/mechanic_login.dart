@@ -53,7 +53,6 @@ class _MechanicLoginState extends State<MechanicLogin> {
   /// Handle Google Sign-In
   void _loginWithGoogle() async {
     setState(() {
-      ;
       loading = true;
     });
 
@@ -202,99 +201,122 @@ class _MechanicLoginState extends State<MechanicLogin> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 25),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/verifyr.png',
-              width: 150,
-              height: 150,
-            ),
-            SizedBox(height: 25),
-            Text(
-              "Phone Verification",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.orange,
-              ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              "Register your phone before getting started!",
-              style: TextStyle(fontSize: 16, color: Colors.black),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 30),
-            Container(
-              height: 55,
-              decoration: BoxDecoration(
-                border: Border.all(width: 1, color: Colors.grey),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
+      body: Container(
+        margin: const EdgeInsets.only(left: 25, right: 25),
+        alignment: Alignment.center,
+        child: SingleChildScrollView(
+          //padding: EdgeInsets.symmetric(horizontal: 25),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                alignment: Alignment.center,
                 children: [
-                  SizedBox(width: 10),
-                  SizedBox(
-                    width: 40,
-                    child: TextField(
-                      controller: countryController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(border: InputBorder.none),
-                      style: TextStyle(color: Colors.black),
-                    ),
+                  Image.asset(
+                    'assets/images/verifyr.png',
+                    width: 150,
+                    height: 150,
                   ),
-                  Text("|",
-                      style: TextStyle(fontSize: 33, color: Colors.black)),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: TextField(
-                      onChanged: (value) => phone = value,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Phone",
-                        hintStyle: TextStyle(color: Colors.black),
+                ],
+              ),
+              SizedBox(height: 25),
+              Text(
+                "Phone Verification",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Register your phone before getting started!",
+                style: TextStyle(fontSize: 16, color: Colors.black),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 30),
+              Container(
+                height: 55,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: Colors.grey),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(width: 10),
+                    SizedBox(
+                      width: 40,
+                      child: TextField(
+                        controller: countryController,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(border: InputBorder.none),
+                        style: TextStyle(color: Colors.black),
                       ),
-                      style: TextStyle(color: Colors.black),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _loginWithPhone,
-              child: loading
-                  ? CircularProgressIndicator(color: Colors.white)
-                  : Text("Send the code"),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _loginWithGoogle,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                side: BorderSide(color: Colors.orange),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset('assets/images/google_logo.png', height: 20),
-                  SizedBox(width: 10),
-                  Text(
-                    "Login with Google",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                    Text("|",
+                        style: TextStyle(fontSize: 33, color: Colors.black)),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        onChanged: (value) => phone = value,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Phone",
+                          hintStyle: TextStyle(color: Colors.black),
+                        ),
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _loginWithPhone,
+                child: loading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text("Send the code"),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _loginWithGoogle,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  side: BorderSide(color: Colors.orange),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/google_logo.png', height: 20),
+                    SizedBox(width: 10),
+                    Text(
+                      "Login with Google",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, 'mainscreen');
+                },
+                child: Text(
+                  "Login as a Customer?",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orangeAccent,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

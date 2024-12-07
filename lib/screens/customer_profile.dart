@@ -116,7 +116,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
 
   void _logout() async {
     await FirebaseAuth.instance.signOut();
-    Navigator.pushNamed(context, 'mainscreen');
+    Navigator.pushReplacementNamed(context, 'mainscreen');
   }
 
   @override
