@@ -55,6 +55,10 @@ dependencies:
   intl: ^0.20.0
   http: ^1.2.2
   geocoding: ^3.0.0
+  flutter_local_notifications: ^18.0.1
+  googleapis_auth: ^1.6.0
+  app_settings: ^5.1.1
+  get: ^4.6.6
    
 
 dev_dependencies:

@@ -115,58 +115,7 @@ class _MechanicLoginState extends State<MechanicLogin> {
     }
   }
 
-  // void _loginWithGoogle() async {
-  //   setState(() {
-  //     loading = true;
-  //   });
-
-  //   try {
-  //     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-  //     if (googleUser == null) {
-  //       setState(() {
-  //         loading = false;
-  //       });
-  //       return;
-  //     }
-
-  //     final GoogleSignInAuthentication googleAuth =
-  //         await googleUser.authentication;
-
-  //     final credential = GoogleAuthProvider.credential(
-  //       accessToken: googleAuth.accessToken,
-  //       idToken: googleAuth.idToken,
-  //     );
-
-  //     UserCredential userCredential =
-  //         await _auth.signInWithCredential(credential);
-  //     final uid = userCredential.user?.uid;
-
-  //     if (uid != null) {
-  //       final docSnapshot = await FirebaseFirestore.instance
-  //           .collection('mechanics')
-  //           .doc(uid)
-  //           .get();
-
-  //       if (docSnapshot.exists) {
-  //         Navigator.pushReplacementNamed(context, 'mechanic_dashboard');
-  //       } else {
-  //         Navigator.pushReplacement(
-  //           context,
-  //           MaterialPageRoute(
-  //             builder: (context) => MechanicProfile(),
-  //           ),
-  //         );
-  //       }
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //     Utils().toastMessage('Google sign-in failed.');
-  //   } finally {
-  //     setState(() {
-  //       loading = false;
-  //     });
-  //   }
-  // }
+   
 
   void _loginWithPhone() async {
     setState(() {

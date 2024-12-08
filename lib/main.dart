@@ -1,3 +1,4 @@
+import 'package:e_mechanic/firebase_options.dart';
 import 'package:e_mechanic/screens/add_products.dart';
 import 'package:e_mechanic/screens/appoinment.dart';
 import 'package:e_mechanic/screens/customer_chatdisplay_screen.dart';
@@ -20,14 +21,31 @@ import 'package:e_mechanic/shop/screens/cart_screen.dart';
 import 'package:e_mechanic/shop/screens/mechanic_chatscreen.dart';
 import 'package:e_mechanic/shop/screens/product_detail_screen.dart';
 import 'package:e_mechanic/shop/screens/product_list_screen.dart';
+import 'package:e_mechanic/shop/services/get_service_key.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:e_mechanic/shop/models/customer_model.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 
+@pragma('vm:entry-point')
+Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+}
+
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   await Firebase.initializeApp();
+//   print("Handling a background message: ${message.messageId}");
+// }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  final getServerKey = GetServerKey();
+  final serverKeyToken = await getServerKey.getServerKeyToken();
+  print('Server Key Token: $serverKeyToken');
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
   runApp(const MyApp());
 }
 

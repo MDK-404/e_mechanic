@@ -38,8 +38,8 @@ class _CustomerChatListScreenState extends State<CustomerChatListScreen> {
         if (!groupedChats.containsKey(mechanicId)) {
           groupedChats[mechanicId] = {
             'mechanicId': mechanicId,
-            'mechanicName': chat['mechanicName'],
-            'mechanicProfileImage': chat['mechanicProfileImage'],
+            'mechanicName': chat['mechanicname'],
+            'mechanicprofileurl': chat['mechanicprofileurl'],
             'latestMessage': chat['message'], // Include the latest message
             'timestamp': chat['timestamp'], // Include timestamp
           };
@@ -108,10 +108,10 @@ class _CustomerChatListScreenState extends State<CustomerChatListScreen> {
                     EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                 leading: CircleAvatar(
                   radius: 30,
-                  backgroundImage: chat['mechanicProfileImage'] != null
-                      ? NetworkImage(chat['mechanicProfileImage'])
+                  backgroundImage: chat['mechanicprofileurl'] != null
+                      ? NetworkImage(chat['mechanicprofileurl'])
                       : null,
-                  child: chat['mechanicProfileImage'] == null
+                  child: chat['mechanicprofileurl'] == null
                       ? Icon(Icons.person, size: 30)
                       : null,
                 ),

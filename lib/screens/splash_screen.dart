@@ -4,7 +4,10 @@ import 'package:e_mechanic/screens/customer_home.dart';
 import 'package:e_mechanic/screens/main_screen.dart';
 import 'package:e_mechanic/screens/mechanic_dashboard.dart';
 import 'package:e_mechanic/shop/models/customer_model.dart';
+import 'package:e_mechanic/shop/services/fcm_service.dart';
+import 'package:e_mechanic/shop/services/notifications_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,11 +19,61 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final auth = FirebaseAuth.instance;
-
+  NotificationService notificationService = NotificationService();
   @override
   void initState() {
+    _initializeApp();
     super.initState();
+    notificationService.requestNotificationPermission();
+    notificationService.firebaseInit(context);
+    notificationService.setupInteractMessage(context);
     navigateUser();
+    FcmService.firebaseInit();
+  }
+
+  Future<void> _initializeApp() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    await _saveDeviceToken(user);
+    // Add navigation logic if needed
+  }
+
+  Future<void> _saveDeviceToken(User? user) async {
+    if (user != null) {
+      FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+      String? token = await _firebaseMessaging.getToken();
+
+      if (token != null) {
+        try {
+          // Check if the user exists in the 'mechanics' collection
+          DocumentReference mechanicDocRef =
+              FirebaseFirestore.instance.collection('mechanics').doc(user.uid);
+          DocumentSnapshot mechanicDocSnapshot = await mechanicDocRef.get();
+
+          if (mechanicDocSnapshot.exists) {
+            // Save token in the 'mechanics' collection
+            await mechanicDocRef.update({'deviceToken': token});
+            print("Device token saved in mechanics collection: $token");
+          } else {
+            // Check if the user exists in the 'customers' collection
+            DocumentReference customerDocRef = FirebaseFirestore.instance
+                .collection('customers')
+                .doc(user.uid);
+            DocumentSnapshot customerDocSnapshot = await customerDocRef.get();
+
+            if (customerDocSnapshot.exists) {
+              // Save token in the 'customers' collection
+              await customerDocRef.update({'deviceToken': token});
+              print("Device token saved in customers collection: $token");
+            } else {
+              print(
+                  "User not found in either mechanics or customers collections.");
+            }
+          }
+        } catch (e) {
+          print("Error saving device token: $e");
+        }
+      }
+    }
   }
 
   void navigateUser() {

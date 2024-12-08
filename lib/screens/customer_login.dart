@@ -45,6 +45,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
           DocumentSnapshot docSnapshot = await docRef.get();
           if (docSnapshot.exists) {
             await docRef.update({'deviceToken': token});
+            print(token);
           } else {
             await docRef.set({'deviceToken': token});
           }

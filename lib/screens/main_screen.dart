@@ -1,7 +1,19 @@
+import 'package:e_mechanic/shop/services/notifications_services.dart';
 import 'package:flutter/material.dart';
 
-class MainScreen extends StatelessWidget {
-  String userType = ""; // UserType variable declare karo
+class MainScreen extends StatefulWidget {
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  String userType = "";
+  NotificationService notificationService = NotificationService();
+  // UserType variable declare karo
+  void initState() {
+    super.initState();
+    notificationService.requestNotificationPermission();
+  }
 
   @override
   Widget build(BuildContext context) {

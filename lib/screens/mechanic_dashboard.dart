@@ -155,7 +155,8 @@ class _MechanicDashboardState extends State<MechanicDashboard> {
                       radius: 40,
                       backgroundImage: mechanicImageUrl != null
                           ? NetworkImage(mechanicImageUrl!)
-                          : const AssetImage('assets/placeholder.png')
+                          : const AssetImage(
+                                  'assets/images/customer_login.jpeg')
                               as ImageProvider,
                     ),
                     const SizedBox(width: 16.0),

@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:e_mechanic/shop/models/productmodels.dart';
+import 'package:e_mechanic/shop/services/send_notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -87,97 +88,146 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
     }
   }
 
+  /// new code uupdated
+  // Mechanic ka FCM token retrieve karne ka function
+  Future<String?> _getMechanicToken(String shopId) async {
+    final mechanicId = widget.product['shopId'];
+    final doc = await _firestore.collection('mechanics').doc(mechanicId).get();
+    return doc.data()?['deviceToken'];
+  }
+
+  Future<void> sendOrderNotification(String mechanicId, String orderId) async {
+    try {
+      // Firestore se mechanic ka device token fetch karein
+      final doc = await FirebaseFirestore.instance
+          .collection('mechanics')
+          .doc(mechanicId)
+          .get();
+      final fcmToken = doc.data()?['deviceToken'];
+
+      if (fcmToken != null) {
+        await SendNotificaitonService.sendNotificationUsingApi(
+          token: fcmToken,
+          title: 'New Order Received',
+          body: 'A customer has placed an order. Tap to view details.',
+          data: {
+            'screen': 'OrdersScreen',
+            'orderId': orderId,
+          },
+        );
+      } else {
+        print('No FCM token found for this mechanic');
+      }
+    } catch (e) {
+      print('Error sending notification: $e');
+    }
+  }
+
   Future<void> placeOrder(BuildContext context) async {
     setState(() {
       isPlacingOrder = true; // Show loader
     });
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      final userName = nameController.text.isNotEmpty
+          ? nameController.text
+          : FirebaseAuth.instance.currentUser?.displayName ?? 'Customer';
 
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    final userName = nameController.text.isNotEmpty
-        ? nameController.text
-        : FirebaseAuth.instance.currentUser?.displayName ?? 'Customer';
+      // Check for empty fields
+      if (nameController.text.trim().isEmpty ||
+          phoneController.text.trim().isEmpty ||
+          addressController.text.trim().isEmpty) {
+        setState(() {
+          isPlacingOrder = false; // Hide loader
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Please fill in all the required fields (Name, Phone, and Address).',
+              style: GoogleFonts.poppins(),
+            ),
+          ),
+        );
+        return;
+      }
 
-    // Check for empty fields
-    if (nameController.text.trim().isEmpty ||
-        phoneController.text.trim().isEmpty ||
-        addressController.text.trim().isEmpty) {
-      setState(() {
-        isPlacingOrder = false; // Hide loader
+      if (uid == null) return;
+
+      final orderNumber = Random().nextInt(1000000);
+      final quantity = int.tryParse(quantityController.text) ?? 0;
+
+      // Add order to Firestore
+      await _firestore.collection('orders').add({
+        'orderNumber': orderNumber,
+        'customerId': uid,
+        'customerName': userName,
+        'customerAddress': addressController.text,
+        'customerPhone': phoneController.text,
+        'productName': widget.product['name'],
+        'productId': widget.product['productId'],
+        'image': widget.product['imageUrl'],
+        'productPrice': widget.product['price'],
+        'quantity': quantity,
+        'shippingCost': 100,
+        'totalPrice': totalPrice,
+        'shopName': widget.product['shopName'],
+        'shopId': widget.product['shopId'],
+        'status': 'Pending',
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+      await sendOrderNotification(
+          widget.product['shopId'], orderNumber.toString());
+
+      // Update product stock
+      await updateProductStock(quantity);
+
+      // Remove item from cart
+      final cartSnapshot = await _firestore
+          .collection('cart')
+          .where('userId', isEqualTo: uid)
+          .where('name', isEqualTo: widget.product['name'])
+          .limit(1)
+          .get();
+
+      if (cartSnapshot.docs.isNotEmpty) {
+        final cartDoc = cartSnapshot.docs.first;
+        await _firestore.collection('cart').doc(cartDoc.id).delete();
+      }
+
+      // setState(() {
+      //   isPlacingOrder = false; // Hide loader
+      // });
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Order Confirmed!', style: GoogleFonts.poppins()),
           content: Text(
-            'Please fill in all the required fields (Name, Phone, and Address).',
+            'Your order #$orderNumber has been placed successfully. It will be delivered in 2-3 days.\n\n'
+            'Total: PKR $totalPrice',
             style: GoogleFonts.poppins(),
           ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'product_list');
+              },
+              child: Text('OK', style: GoogleFonts.poppins()),
+            ),
+          ],
         ),
       );
-      return;
-    }
-
-    if (uid == null) return;
-
-    final orderNumber = Random().nextInt(1000000);
-    final quantity = int.tryParse(quantityController.text) ?? 0;
-
-    // Add order to Firestore
-    await _firestore.collection('orders').add({
-      'orderNumber': orderNumber,
-      'customerId': uid,
-      'customerName': userName,
-      'customerAddress': addressController.text,
-      'customerPhone': phoneController.text,
-      'productName': widget.product['name'],
-      'productId': widget.product['productId'],
-      'image': widget.product['imageUrl'],
-      'productPrice': widget.product['price'],
-      'quantity': quantity,
-      'shippingCost': 100,
-      'totalPrice': totalPrice,
-      'shopName': widget.product['shopName'],
-      'shopId': widget.product['shopId'],
-      'status': 'Pending',
-    });
-
-    // Update product stock
-    await updateProductStock(quantity);
-
-    // Remove item from cart
-    final cartSnapshot = await _firestore
-        .collection('cart')
-        .where('userId', isEqualTo: uid)
-        .where('name', isEqualTo: widget.product['name'])
-        .limit(1)
-        .get();
-
-    if (cartSnapshot.docs.isNotEmpty) {
-      final cartDoc = cartSnapshot.docs.first;
-      await _firestore.collection('cart').doc(cartDoc.id).delete();
-    }
-
-    setState(() {
-      isPlacingOrder = false; // Hide loader
-    });
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Order Confirmed!', style: GoogleFonts.poppins()),
-        content: Text(
-          'Your order #$orderNumber has been placed successfully. It will be delivered in 2-3 days.\n\n'
-          'Total: PKR $totalPrice',
-          style: GoogleFonts.poppins(),
+    } catch (e) {
+      print('Error placing order: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to place order. Please try again later.'),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, 'product_list');
-            },
-            child: Text('OK', style: GoogleFonts.poppins()),
-          ),
-        ],
-      ),
-    );
+      );
+    } finally {
+      setState(() {
+        isPlacingOrder = false; // Hide loader regardless of success or failure
+      });
+    }
   }
 
   @override
