@@ -6,7 +6,7 @@ class OrderDetailsScreen extends StatelessWidget {
   final String customerAddress;
   final String productName;
   final int quantity;
-  final double totalPrice;
+  final num totalPrice;
 
   const OrderDetailsScreen({
     Key? key,

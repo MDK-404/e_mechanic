@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_mechanic/shop/models/customer_model.dart';
+import 'package:e_mechanic/screens/order_detail_screen.dart';
 import 'package:e_mechanic/shop/screens/mechanic_chatscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -62,9 +62,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       await _firestore.collection('orders').doc(orderId).update(
           {'status': 'confirmed'}); // Update order status to 'confirmed'
 
-      // Send push notification (example message)
-      sendNotificationToCustomer(orderId);
-
       // Refresh the UI
       setState(() {
         final orderIndex = orders.indexWhere((order) => order.id == orderId);
@@ -78,12 +75,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
         SnackBar(content: Text('Failed to update order: $e')),
       );
     }
-  }
-
-  // Function to send a push notification
-  Future<void> sendNotificationToCustomer(String orderId) async {
-    // Placeholder for sending notifications.
-    print('Sending notification for order $orderId');
   }
 
   @override
@@ -112,109 +103,117 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         itemBuilder: (context, index) {
                           final order = orders[index];
                           final orderId = order.id;
-                          final customerId = order['customerId'];
+                          final customerName = order['customerName'];
+                          final customerPhone = order['customerPhone'];
+                          final customerAddress = order['customerAddress'];
                           final productName = order['productName'];
-                          final price = order['productPrice'];
+                          final price = order['totalPrice'];
                           final quantity = order['quantity'];
                           final productImage = order['image'];
                           final orderStatus = order['status'];
 
-                          return FutureBuilder<Customer?>(
-                            future: fetchCustomer(customerId),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              }
-
-                              if (!snapshot.hasData) {
-                                return Center(
-                                    child: Text('Customer not found'));
-                              }
-
-                              final customer = snapshot.data!;
-                              final customerName = customer.name;
-                              final profileImage = customer.profilePicture;
-
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Card(
-                                  color: Colors.orangeAccent,
-                                  margin: EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              color: Colors.orangeAccent,
+                              margin: EdgeInsets.symmetric(vertical: 8.0),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage:
+                                          NetworkImage(productImage),
+                                      radius: 35,
+                                    ),
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            productName,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            'Customer: $customerName\nPrice: PKR ${price}\nQuantity: $quantity\nStatus: $orderStatus',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.black),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Column(
                                       children: [
-                                        CircleAvatar(
-                                          backgroundImage:
-                                              NetworkImage(productImage),
-                                          radius: 35,
+                                        IconButton(
+                                          icon: Icon(Icons.chat,
+                                              color: Colors.orangeAccent),
+                                          onPressed: () {
+                                            _navigateToChat(
+                                              order['customerId'],
+                                              customerName,
+                                              productImage,
+                                            );
+                                          },
                                         ),
-                                        SizedBox(width: 12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                productName,
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                        SizedBox(height: 8),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    OrderDetailsScreen(
+                                                  customerName: customerName,
+                                                  customerPhone: customerPhone,
+                                                  customerAddress:
+                                                      customerAddress,
+                                                  productName: productName,
+                                                  quantity: quantity,
+                                                  totalPrice: price *
+                                                      quantity.toDouble(),
+                                                ),
                                               ),
-                                              SizedBox(height: 8),
-                                              Text(
-                                                'Customer: $customerName\nPrice: PKR ${price}\nQuantity: $quantity\nStatus: $orderStatus',
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.black),
-                                              ),
-                                            ],
+                                            );
+                                          },
+                                          child: Text('View',
+                                              style: TextStyle(fontSize: 12)),
+                                          style: ElevatedButton.styleFrom(
+                                            minimumSize:
+                                                Size(screenWidth * 0.2, 40),
                                           ),
                                         ),
-                                        SizedBox(width: 12),
-                                        Column(
-                                          children: [
-                                            IconButton(
-                                              icon: Icon(Icons.chat,
-                                                  color: Colors.orangeAccent),
-                                              onPressed: () {
-                                                _navigateToChat(customerId,
-                                                    customerName, profileImage);
-                                              },
-                                            ),
-                                            SizedBox(height: 8),
-                                            ElevatedButton(
-                                              onPressed:
-                                                  orderStatus == 'confirmed'
-                                                      ? null
-                                                      : () {
-                                                          _updateOrderStatus(
-                                                              orderId);
-                                                        },
-                                              child: Text(
-                                                orderStatus == 'confirmed'
-                                                    ? 'Confirmed'
-                                                    : 'Confirm',
-                                                style: TextStyle(fontSize: 12),
-                                              ),
-                                              style: ElevatedButton.styleFrom(
-                                                minimumSize:
-                                                    Size(screenWidth * 0.2, 40),
-                                              ),
-                                            ),
-                                          ],
+                                        SizedBox(height: 8),
+                                        ElevatedButton(
+                                          onPressed: orderStatus == 'confirmed'
+                                              ? null
+                                              : () {
+                                                  _updateOrderStatus(orderId);
+                                                },
+                                          child: Text(
+                                            orderStatus == 'confirmed'
+                                                ? 'Confirmed'
+                                                : 'Confirm',
+                                            style: TextStyle(fontSize: 12),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                            minimumSize:
+                                                Size(screenWidth * 0.2, 40),
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              );
-                            },
+                              ),
+                            ),
                           );
                         },
                       ),
@@ -226,6 +225,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 }
+
+
 
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:e_mechanic/shop/models/customer_model.dart';
@@ -257,7 +258,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 //             .collection('orders')
 //             .where('shopId',
 //                 isEqualTo: user.uid) // Fetch orders for the current shop
-//             .where('status', isEqualTo: 'Pending') // Only pending orders
+//             .orderBy('status') // Order by status (Pending first)
 //             .get();
 
 //         setState(() {
@@ -293,6 +294,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
 //       // Send push notification (example message)
 //       sendNotificationToCustomer(orderId);
+
+//       // Refresh the UI
+//       setState(() {
+//         final orderIndex = orders.indexWhere((order) => order.id == orderId);
+//         if (orderIndex != -1) {
+//           orders[orderIndex] = orders[orderIndex].reference.get()
+//               as DocumentSnapshot; // Update order in the list
+//         }
+//       });
 //     } catch (e) {
 //       ScaffoldMessenger.of(context).showSnackBar(
 //         SnackBar(content: Text('Failed to update order: $e')),
@@ -337,6 +347,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 //                           final price = order['productPrice'];
 //                           final quantity = order['quantity'];
 //                           final productImage = order['image'];
+//                           final orderStatus = order['status'];
 
 //                           return FutureBuilder<Customer?>(
 //                             future: fetchCustomer(customerId),
@@ -387,7 +398,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 //                                               ),
 //                                               SizedBox(height: 8),
 //                                               Text(
-//                                                 'Customer: $customerName\nPrice: PKR ${price}\nQuantity: $quantity',
+//                                                 'Customer: $customerName\nPrice: PKR ${price}\nQuantity: $quantity\nStatus: $orderStatus',
 //                                                 style: TextStyle(
 //                                                     fontSize: 14,
 //                                                     color: Colors.black),
@@ -408,11 +419,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
 //                                             ),
 //                                             SizedBox(height: 8),
 //                                             ElevatedButton(
-//                                               onPressed: () {
-//                                                 _updateOrderStatus(orderId);
-//                                               },
+//                                               onPressed:
+//                                                   orderStatus == 'confirmed'
+//                                                       ? null
+//                                                       : () {
+//                                                           _updateOrderStatus(
+//                                                               orderId);
+//                                                         },
 //                                               child: Text(
-//                                                 'Confirm',
+//                                                 orderStatus == 'confirmed'
+//                                                     ? 'Confirmed'
+//                                                     : 'Confirm',
 //                                                 style: TextStyle(fontSize: 12),
 //                                               ),
 //                                               style: ElevatedButton.styleFrom(
@@ -439,3 +456,5 @@ class _OrdersScreenState extends State<OrdersScreen> {
 //     );
 //   }
 // }
+
+ 

@@ -88,7 +88,7 @@ class _MechanicDashboardState extends State<MechanicDashboard> {
           .where('mechanicId', isEqualTo: user.uid)
           .get();
       final emergencySnapshot = await _firestore
-          .collection('emergencyRequests')
+          .collection('emergencyrequest')
           .where('mechanicId', isEqualTo: user.uid)
           .get();
 

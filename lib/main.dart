@@ -41,9 +41,9 @@ Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
 // }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final getServerKey = GetServerKey();
-  final serverKeyToken = await getServerKey.getServerKeyToken();
-  print('Server Key Token: $serverKeyToken');
+  // final getServerKey = GetServerKey();
+  // final serverKeyToken = await getServerKey.getServerKeyToken();
+  // print('Server Key Token: $serverKeyToken');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
   runApp(const MyApp());
