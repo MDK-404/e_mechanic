@@ -35,17 +35,16 @@ Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
   );
 }
 
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   await Firebase.initializeApp();
-//   print("Handling a background message: ${message.messageId}");
-// }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // final getServerKey = GetServerKey();
-  // final serverKeyToken = await getServerKey.getServerKeyToken();
-  // print('Server Key Token: $serverKeyToken');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
+
+  final getServerKey = GetServerKey();
+  final serverKeyToken = await getServerKey.getServerKeyToken();
+  print('Server Key Token: $serverKeyToken');
+
   runApp(const MyApp());
 }
 
