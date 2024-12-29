@@ -1,16 +1,34 @@
-# e_mechanic
+# E-Mechanic
 
-A new Flutter project.
+**E-Mechanic** is a user-friendly Flutter application designed to provide seamless mechanic services for car owners. With this app, users can easily find nearby mechanics, book appointments, track service progress, and much more. The app connects users with professional mechanics for efficient and reliable car repairs.
 
-## Getting Started
+## Features
+- **User Registration & Login**: Secure authentication using Firebase.
+- **Mechanic Search**: Find mechanics based on your location or required service.
+- **Appointment Booking**: Schedule mechanic visits at convenient times.
+- **Service Tracking**: Track the progress of your vehicle’s repair in real-time.
+- **Ratings & Reviews**: Rate mechanics after service completion to help others.
+- **Push Notifications**: Receive updates about your appointment status and service progress.
+- **Map Integration**: Easily find nearby mechanics using Google Maps.
 
-This project is a starting point for a Flutter application.
+## Tech Stack
+- **Flutter**: Cross-platform mobile development.
+- **Firebase**: Authentication, database, and push notifications.
+- **Google Maps API**: Location and mapping features.
 
-A few resources to get you started if this is your first Flutter project:
+## Screenshots
+Below are some screenshots of the app's UI:
+![Splash Screen](assets/screenshot/splash_screen.png)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![Login Screen](assets/screenshot/login.png)
+ 
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Nechanic Dasboard](assets/images/mechanic_dashboard.png)
+ 
+
+![Product Details](assets/images/product_details.png)
+ 
+
+ 
+ 
+ 
