@@ -5,6 +5,7 @@ import 'package:e_mechanic/screens/customer_chatdisplay_screen.dart';
 import 'package:e_mechanic/screens/customer_home.dart';
 import 'package:e_mechanic/screens/customer_login.dart';
 import 'package:e_mechanic/screens/customer_profile.dart';
+import 'package:e_mechanic/screens/emergency_request_show.dart';
 import 'package:e_mechanic/screens/main_screen.dart';
 import 'package:e_mechanic/screens/mechanic_booking_screen.dart';
 import 'package:e_mechanic/screens/mechanic_dashboard.dart';
@@ -80,6 +81,7 @@ class MyApp extends StatelessWidget {
         'bookings_screen': (context) => BookingsScreen(),
         'order_screen': (context) => OrdersScreen(),
         'cart': (context) => CartScreen(),
+        'emergency_screen': (context) => EmergencyRequestsScreen(),
         'product_list': (context) => ProductListScreen(),
         'mechanic_otp': (context) => OTPVerification(
               verificationid: 'verificationid',
